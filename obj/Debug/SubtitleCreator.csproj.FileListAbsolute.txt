@@ -1,0 +1,2 @@
+C:\SubtitleCreator\bin\Debug\SubtitleCreator.exe.config
+C:\Users\Molokanov\Documents\GitHub\SubtitleCreator\bin\Debug\SubtitleCreator.exe.config
