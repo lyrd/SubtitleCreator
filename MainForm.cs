@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections;
+using NAudio.Wave;
 
 namespace SubtitleCreator
 {
@@ -30,6 +31,8 @@ namespace SubtitleCreator
          *возвращение фокуса                         †
          *кол-во фильтов (stndrt/ extended)          †
          *toolStrip                                  †
+         *нормировка
+         *фильтры сохр. в файле
          */
 
         /*
@@ -152,11 +155,32 @@ namespace SubtitleCreator
         }
         #endregion
 
+        private static void SaveIntoFile(short[] mas)
+        {
+            StreamWriter str = new StreamWriter("test_s.txt");
+            for (int i = 0; i < mas.Length; i++)
+            {
+                str.WriteLine(mas[i]);
+            }
+            str.Close();
+        }
+
         private void btnTest_Click(object sender, EventArgs e)
         {
-            timerStatusChecker.Start();
+            //timerStatusChecker.Start();
+            //Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
 
-            Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
+            using (WaveFileReader reader = new WaveFileReader(outputAudioFile))
+            {
+                //Assert.AreEqual(16, reader.WaveFormat.BitsPerSample, "Only works with 16 bit audio"); // if
+                byte[] buffer = new byte[reader.Length];
+                int read = reader.Read(buffer, 0, buffer.Length);
+                short[] sampleBuffer = new short[read / 2];
+                Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
+
+                MessageBox.Show("!!!");
+            }
+
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -164,21 +188,29 @@ namespace SubtitleCreator
             OpenFileDialog dialog = new OpenFileDialog();
 
             string filter1 = FormatListBuilder(videoFormats);
-            string filter2 = filter1.Replace(',', ';').Replace("(", "").Replace(")", "");
+            string filter2 = filter1.Replace(',', ';').Replace("(", "").Replace(")", "");//В случае множественных замен надо использовать StringBuilder.Replace()
 
-            dialog.Filter = String.Format("Video Files {0}|{1}", filter1, filter2);
+            dialog.Filter     = String.Format("Video Files {0}|{1}", filter1, filter2);
             tBInputVideo.Text = inputVideoFile = dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : "err";
-            name = Transliteration(System.IO.Path.GetFileNameWithoutExtension(inputVideoFile)).Replace(' ','_');
-            outputAudioFile = String.Format("{0}\\{1}.{2}", Directory.GetCurrentDirectory(), name, format);
+            name              = Transliteration(System.IO.Path.GetFileNameWithoutExtension(inputVideoFile)).Replace(' ','_');
+            outputAudioFile   = String.Format("{0}\\{1}.{2}", Directory.GetCurrentDirectory(), name, format);
+
+            timerStatusChecker.Start();
+            Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
         }
 
         #region
         private void timerStatusChecker_Tick(object sender, EventArgs e)
         {
             status = Process.GetProcessesByName("ffmpeg").Any() ? Status.in_work : Status.idle;
+
             this.Text = status == Status.in_work ? formText + " - IN WORK" : formText;
             this.Enabled = status == Status.in_work ? false : true;
-            if (!this.Focused && status == Status.idle) { this.Activate(); timerStatusChecker.Stop(); };
+
+            if (!this.Focused && status == Status.idle)
+            { 
+                this.Activate(); timerStatusChecker.Stop(); 
+            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)

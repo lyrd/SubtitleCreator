@@ -49,7 +49,7 @@
             // 
             // btnTest
             // 
-            this.btnTest.Location = new System.Drawing.Point(651, 29);
+            this.btnTest.Location = new System.Drawing.Point(651, 45);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(103, 23);
             this.btnTest.TabIndex = 0;
@@ -68,7 +68,7 @@
             // 
             this.groupBox1.Controls.Add(this.btnOpen);
             this.groupBox1.Controls.Add(this.tBInputVideo);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Location = new System.Drawing.Point(12, 28);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(633, 50);
             this.groupBox1.TabIndex = 2;
@@ -128,7 +128,7 @@
             this.стандартныеToolStripMenuItem,
             this.расширенныеToolStripMenuItem});
             this.форматыToolStripMenuItem.Name = "форматыToolStripMenuItem";
-            this.форматыToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.форматыToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.форматыToolStripMenuItem.Text = "Форматы";
             // 
             // стандартныеToolStripMenuItem
