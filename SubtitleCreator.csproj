@@ -38,6 +38,9 @@
     <Reference Include="NAudio">
       <HintPath>..\..\..\Desktop\ДИПЛОМ\program\testWAV\NAudio.dll</HintPath>
     </Reference>
+    <Reference Include="OperationWithFiles">
+      <HintPath>.\OperationWithFiles.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -70,6 +73,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="FileFilters.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

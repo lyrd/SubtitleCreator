@@ -20,3 +20,5 @@ C:\Users\Anton\Documents\GitHub\SubtitleCreator\obj\Debug\SubtitleCreator.MainFo
 C:\Users\Anton\Documents\GitHub\SubtitleCreator\obj\Debug\SubtitleCreator.Properties.Resources.resources
 C:\Users\Anton\Documents\GitHub\SubtitleCreator\obj\Debug\SubtitleCreator.csproj.GenerateResource.Cache
 C:\Users\Molokanov\Documents\GitHub\SubtitleCreator\bin\Debug\NAudio.dll
+C:\Users\Molokanov\Documents\GitHub\SubtitleCreator\bin\Debug\OperationWithFiles.dll
+C:\Users\Molokanov\Documents\GitHub\SubtitleCreator\bin\Debug\FileFilters.ini

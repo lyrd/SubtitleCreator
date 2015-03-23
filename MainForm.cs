@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections;
 using NAudio.Wave;
+using OperationWithFiles;
 
 namespace SubtitleCreator
 {
@@ -32,7 +33,8 @@ namespace SubtitleCreator
          *кол-во фильтов (stndrt/ extended)          †
          *toolStrip                                  †
          *нормировка
-         *фильтры сохр. в файле
+         *фильтры сохр. в файле                      †
+         *exceptions
          */
 
         /*
@@ -53,9 +55,11 @@ namespace SubtitleCreator
         private string outputAudioFile = "";
         private string name = ""; 
         private string format = "wav";
-        private string[] videoFormatsStandart = { ".3g2", ".3gp", ".3gp2", ".3gpp", ".3gpp2", ".asf", ".asx", ".avi", ".bin", ".dat", ".drv", ".f4v", ".flv", ".gtp", ".m4v", ".mkv", ".mod", ".moov", ".mov", ".mp4", ".mpeg", ".mpg", ".mts", ".rm", ".spl", ".srt", ".swf", ".vcd", ".vid", ".vid", ".vid", ".vob", ".wm", ".wmv", ".yuv" };
-        private string[] videoFormatsExtended = { ".264", ".3g2", ".3gp", ".3gp2", ".3gpp", ".3gpp2", ".3mm", ".3p2", ".60d", ".787", ".890", ".aaf", ".aec", ".aep", ".aepx", ".aet", ".aetx", ".ajp", ".ale", ".am", ".amc", ".amv", ".amx", ".anim", ".aqt", ".arcut", ".arf", ".asf", ".asx", ".avb", ".avchd", ".avd", ".avi", ".avp", ".avs", ".avs", ".avv", ".awlive", ".axm", ".bdm", ".bdmv", ".bik", ".bin", ".bix", ".bnp", ".box", ".bs4", ".bsf", ".bu", ".bvr", ".byu", ".camproj", ".camrec", ".camv", ".ced", ".cine", ".cip", ".clpi", ".cmmp", ".cmmtpl", ".cvc", ".cx3", ".d2v", ".d3v", ".dash", ".dat", ".dav", ".dce", ".dck", ".ddat", ".dif", ".dir", ".divx", ".dlx", ".dmb", ".dmsd", ".dmsd3d", ".dmsm", ".dmsm3d", ".dmss", ".dmx", ".dnc", ".dpa", ".dpg", ".dream", ".dv", ".dv-avi", ".dv4", ".dvr", ".dvr-ms", ".dvx", ".dxr", ".dzm", ".dzp", ".dzt", ".edl", ".evo", ".eye", ".f4f", ".f4p", ".f4v", ".fbr", ".fbz", ".flc", ".flh", ".fli", ".flv", ".flx", ".ftc", ".gfp", ".gl", ".gom", ".grasp", ".gts", ".gvi", ".gvp", ".h264", ".hdmov", ".hdv", ".hkm", ".ifo", ".imovieproject", ".ircp", ".irf", ".ismc", ".ismv", ".iva", ".ivf", ".ivr", ".ivs", ".izz", ".izzy", ".jmv", ".jss", ".jts", ".jtv", ".k3g", ".kmv", ".lrec", ".lrv", ".lsf", ".lsx", ".lvix", ".m15", ".m1pg", ".m1v", ".m21", ".m21", ".m2a", ".m2t", ".m2ts", ".m2v", ".m4e", ".m4u", ".m4v", ".m75", ".mani", ".meta", ".mgv", ".mj2", ".mjp", ".mjpg", ".mk3d", ".mkv", ".mmv", ".mnv", ".mob", ".mod", ".moff", ".moi", ".moov", ".mov", ".movie", ".mp21", ".mp21", ".mp2v", ".mp4", ".mp4.infovid", ".mp4v", ".mpe", ".mpeg", ".mpeg1", ".mpeg4", ".mpf", ".mpg", ".mpg2", ".mpgindex", ".mpl", ".mpls", ".mpsub", ".mpv", ".mpv2", ".mqv", ".msdvd", ".msh", ".mswmm", ".mts", ".mtv", ".mvb", ".mvc", ".mvd", ".mve", ".mvex", ".mvp", ".mvy", ".mxf", ".mxv", ".mys", ".ncor", ".nsv", ".nut", ".nuv", ".nvc", ".ogm", ".ogv", ".ogx", ".orv", ".otrkey", ".par", ".pds", ".pgi", ".photoshow", ".piv", ".pjs", ".playlist", ".plproj", ".pmf", ".pmv", ".ppj", ".prel", ".pro", ".pro4dvd", ".pro5dvd", ".proqc", ".prproj", ".prtl", ".prx", ".psh", ".pssd", ".pva", ".pvr", ".pxv", ".qt", ".qtch", ".qtindex", ".qtl", ".qtm", ".qtz", ".r3d", ".rdb", ".rec", ".rm", ".rmd", ".rmp", ".rms", ".rmv", ".rmvb", ".roq", ".rp", ".rsx", ".rts", ".rts", ".rum", ".rv", ".rvl", ".sbk", ".sbt", ".scm", ".scm", ".scn", ".sdc", ".sdv", ".sedprj", ".sfvidcap", ".siv", ".smi", ".smil", ".smk", ".sml", ".smv", ".snagproj", ".spl", ".srt", ".ssm", ".str", ".stx", ".svi", ".swf", ".swi", ".swt", ".tda3mt", ".tdx", ".tid", ".tivo", ".tix", ".tod", ".tp", ".tp0", ".tpd", ".tpr", ".trp", ".ts", ".ttxt", ".tvs", ".usm", ".vbc", ".vc1", ".vcpf", ".vcr", ".vcv", ".vdo", ".vdr", ".veg", ".vem", ".vep", ".vf", ".vft", ".vfw", ".vfz", ".vgz", ".vid", ".video", ".viewlet", ".viv", ".vivo", ".vix", ".vlab", ".vob", ".vp3", ".vp6", ".vp7", ".vpj", ".vro", ".vs4", ".vse", ".vsp", ".w32", ".wcp", ".webm", ".wm", ".wmd", ".wmmp", ".wmv", ".wmx", ".wp3", ".wtv", ".wvx", ".xej", ".xel", ".xesc", ".xfl", ".xlmv", ".xmv", ".xvid", ".y4m", ".yog", ".yuv", ".zeg", ".zm1", ".zm2", ".zm3", ".zmv", ".264", ".3g2", ".3gp", ".3gp2", ".3gpp", ".3gpp2", ".3mm", ".3p2", ".60d", ".787", ".890", ".aaf", ".aec", ".aep", ".aepx", ".aet", ".aetx", ".ajp", ".ale", ".am", ".amc", ".amv", ".amx", ".anim", ".aqt", ".arcut", ".arf", ".asf", ".asx", ".avb", ".avchd", ".avd", ".avi", ".avp", ".avs", ".avs", ".avv", ".awlive", ".axm", ".bdm", ".bdmv", ".bik", ".bin", ".bix", ".bnp", ".box", ".bs4", ".bsf", ".bu", ".bvr", ".byu", ".camproj", ".camrec", ".camv", ".ced", ".cine", ".cip", ".clpi", ".cmmp", ".cmmtpl", ".cvc", ".cx3", ".d2v", ".d3v", ".dash", ".dat", ".dav", ".dce", ".dck", ".ddat", ".dif", ".dir", ".divx", ".dlx", ".dmb", ".dmsd", ".dmsd3d", ".dmsm", ".dmsm3d", ".dmss", ".dmx", ".dnc", ".dpa", ".dpg", ".dream", ".dv", ".dv-avi", ".dv4", ".dvr", ".dvr-ms", ".dvx", ".dxr", ".dzm", ".dzp", ".dzt", ".edl", ".evo", ".eye", ".f4f", ".f4p", ".f4v", ".fbr", ".fbz", ".flc", ".flh", ".fli", ".flv", ".flx", ".ftc", ".gfp", ".gl", ".gom", ".grasp", ".gts", ".gvi", ".gvp", ".h264", ".hdmov", ".hdv", ".hkm", ".ifo", ".imovieproject", ".ircp", ".irf", ".ismc", ".ismv", ".iva", ".ivf", ".ivr", ".ivs", ".izz", ".izzy", ".jmv", ".jss", ".jts", ".jtv", ".k3g", ".kmv", ".lrec", ".lrv", ".lsf", ".lsx", ".lvix", ".m15", ".m1pg", ".m1v", ".m21", ".m21", ".m2a", ".m2t", ".m2ts", ".m2v", ".m4e", ".m4u", ".m4v", ".m75", ".mani", ".meta", ".mgv", ".mj2", ".mjp", ".mjpg", ".mk3d", ".mkv", ".mmv", ".mnv", ".mob", ".mod", ".moff", ".moi", ".moov", ".mov", ".movie", ".mp21", ".mp21", ".mp2v", ".mp4", ".mp4.infovid", ".mp4v", ".mpe", ".mpeg", ".mpeg1", ".mpeg4", ".mpf", ".mpg", ".mpg2", ".mpgindex", ".mpl", ".mpls", ".mpsub", ".mpv", ".mpv2", ".mqv", ".msdvd", ".msh", ".mswmm", ".mts", ".mtv", ".mvb", ".mvc", ".mvd", ".mve", ".mvex", ".mvp", ".mvy", ".mxf", ".mxv", ".mys", ".ncor", ".nsv", ".nut", ".nuv", ".nvc", ".ogm", ".ogv", ".ogx", ".orv", ".otrkey", ".par", ".pds", ".pgi", ".photoshow", ".piv", ".pjs", ".playlist", ".plproj", ".pmf", ".pmv", ".ppj", ".prel", ".pro", ".pro4dvd", ".pro5dvd", ".proqc", ".prproj", ".prtl", ".prx", ".psh", ".pssd", ".pva", ".pvr", ".pxv", ".qt", ".qtch", ".qtindex", ".qtl", ".qtm", ".qtz", ".r3d", ".rdb", ".rec", ".rm", ".rmd", ".rmp", ".rms", ".rmv", ".rmvb", ".roq", ".rp", ".rsx", ".rts", ".rts", ".rum", ".rv", ".rvl", ".sbk", ".sbt", ".scm", ".scm", ".scn", ".sdc", ".sdv", ".sedprj", ".sfvidcap", ".siv", ".smi", ".smil", ".smk", ".sml", ".smv", ".snagproj", ".spl", ".srt", ".ssm", ".str", ".stx", ".svi", ".swf", ".swi", ".swt", ".tda3mt", ".tdx", ".tid", ".tivo", ".tix", ".tod", ".tp", ".tp0", ".tpd", ".tpr", ".trp", ".ts", ".ttxt", ".tvs", ".usm", ".vbc", ".vc1", ".vcpf", ".vcr", ".vcv", ".vdo", ".vdr", ".veg", ".vem", ".vep", ".vf", ".vft", ".vfw", ".vfz", ".vgz", ".vid", ".video", ".viewlet", ".viv", ".vivo", ".vix", ".vlab", ".vob", ".vp3", ".vp6", ".vp7", ".vpj", ".vro", ".vs4", ".vse", ".vsp", ".w32", ".wcp", ".webm", ".wm", ".wmd", ".wmmp", ".wmv", ".wmx", ".wp3", ".wtv", ".wvx", ".xej", ".xel", ".xesc", ".xfl", ".xlmv", ".xmv", ".xvid", ".y4m", ".yog", ".yuv", ".zeg", ".zm1", ".zm2", ".zm3", ".zmv" };
-        private ArrayList videoFormats = new ArrayList();
+
+        private string filter1 = "";
+        private string filter2 = "";
+
+        static private string iniFilePath = Directory.GetCurrentDirectory() + "\\FileFilters.ini";
         private string formText = "Subtitle Creator v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         private enum Status { idle, in_work };
         private Status status = Status.idle;
@@ -153,11 +157,46 @@ namespace SubtitleCreator
 
             return output;
         }
+
+        //type
+        //"StandardFilters"
+        //"ExtendedFilters"
+        private void SetFilters(string type)
+        {
+            using (IniFile ini = new IniFile(iniFilePath))
+            {
+                filter1 = ini.IniReadValue(type, "filter1");
+                filter2 = ini.IniReadValue(type, "filter2");
+            }
+        }
+
+        private void ReadWavDataChunk()
+        {
+            using (WaveFileReader reader = new WaveFileReader(outputAudioFile))
+            {
+                if (reader.WaveFormat.BitsPerSample == 16)
+                {
+                    byte[] buffer = new byte[reader.Length];
+                    int read = reader.Read(buffer, 0, buffer.Length);
+                    short[] sampleBuffer = new short[read / 2];
+                    Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
+
+                    buffer = null;
+                    //sampleBuffer = null;
+                    GC.Collect();
+                }
+                else
+                {
+                    MessageBox.Show("Only works with 16 bit audio");
+                }
+            }
+        }
         #endregion
 
-        private static void SaveIntoFile(short[] mas)
+        #region Methods for tests
+        private static void SaveIntoFile(short[] mas, string name)
         {
-            StreamWriter str = new StreamWriter("test_s.txt");
+            StreamWriter str = new StreamWriter(name + ".txt");
             for (int i = 0; i < mas.Length; i++)
             {
                 str.WriteLine(mas[i]);
@@ -165,21 +204,37 @@ namespace SubtitleCreator
             str.Close();
         }
 
+        private static void SaveIntoFile(string variable, string name)
+        {
+            StreamWriter sw = new StreamWriter(name + ".txt");
+            sw.Write(variable);
+            sw.Close();
+        }
+        #endregion
+
         private void btnTest_Click(object sender, EventArgs e)
         {
             //timerStatusChecker.Start();
             //Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
 
-            using (WaveFileReader reader = new WaveFileReader(outputAudioFile))
-            {
-                //Assert.AreEqual(16, reader.WaveFormat.BitsPerSample, "Only works with 16 bit audio"); // if
-                byte[] buffer = new byte[reader.Length];
-                int read = reader.Read(buffer, 0, buffer.Length);
-                short[] sampleBuffer = new short[read / 2];
-                Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
+            //using (WaveFileReader reader = new WaveFileReader(outputAudioFile))
+            //{
+            //    if (reader.WaveFormat.BitsPerSample == 16)
+            //    {
+            //        byte[] buffer = new byte[reader.Length];
+            //        int read = reader.Read(buffer, 0, buffer.Length);
+            //        short[] sampleBuffer = new short[read / 2];
+            //        Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
 
-                MessageBox.Show("!!!");
-            }
+            //        buffer = null;
+            //        //sampleBuffer = null;
+            //        GC.Collect();
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show("Only works with 16 bit audio");
+            //    }
+            //}     
 
         }
 
@@ -187,19 +242,29 @@ namespace SubtitleCreator
         {
             OpenFileDialog dialog = new OpenFileDialog();
 
-            string filter1 = FormatListBuilder(videoFormats);
-            string filter2 = filter1.Replace(',', ';').Replace("(", "").Replace(")", "");//В случае множественных замен надо использовать StringBuilder.Replace()
-
-            dialog.Filter     = String.Format("Video Files {0}|{1}", filter1, filter2);
+            dialog.Filter = String.Format("Video Files {0}|{1}", filter1, filter2);
             tBInputVideo.Text = inputVideoFile = dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : "err";
-            name              = Transliteration(System.IO.Path.GetFileNameWithoutExtension(inputVideoFile)).Replace(' ','_');
-            outputAudioFile   = String.Format("{0}\\{1}.{2}", Directory.GetCurrentDirectory(), name, format);
+            name = Transliteration(System.IO.Path.GetFileNameWithoutExtension(inputVideoFile)).Replace(' ', '_');
+            outputAudioFile = String.Format("{0}\\{1}.{2}", Directory.GetCurrentDirectory(), name, format);
 
-            timerStatusChecker.Start();
-            Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
+            if (inputVideoFile != "err")
+            {
+                try
+                {
+                    timerStatusChecker.Start();
+                    Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));                   
+                }
+                catch
+                {
+                    MessageBox.Show("ffmpeg.exe не найден",
+                    "Ошибка",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
+            }
         }
 
-        #region
+        #region "Event handlers"
         private void timerStatusChecker_Tick(object sender, EventArgs e)
         {
             status = Process.GetProcessesByName("ffmpeg").Any() ? Status.in_work : Status.idle;
@@ -208,32 +273,41 @@ namespace SubtitleCreator
             this.Enabled = status == Status.in_work ? false : true;
 
             if (!this.Focused && status == Status.idle)
-            { 
-                this.Activate(); timerStatusChecker.Stop(); 
+            {
+                ReadWavDataChunk();
+
+                this.Activate();
+
+                timerStatusChecker.Stop(); 
             }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            File.SetAttributes(iniFilePath, FileAttributes.ReadOnly);
+
             this.Text = formText;
-            if (стандартныеToolStripMenuItem.Checked) videoFormats.AddRange(videoFormatsStandart);
-            if (расширенныеToolStripMenuItem.Checked) videoFormats.AddRange(videoFormatsExtended);
+
+            if (стандартныеToolStripMenuItem.Checked) { SetFilters("StandardFilters"); }
+
+            if (расширенныеToolStripMenuItem.Checked) { SetFilters("ExtendedFilters"); }
         }
 
         private void стандартныеToolStripMenuItem_Click(object sender, EventArgs e)
         {
             стандартныеToolStripMenuItem.Checked = true;
             расширенныеToolStripMenuItem.Checked = false;
-            videoFormats.Clear();
-            videoFormats.AddRange(videoFormatsStandart);
+
+            SetFilters("StandardFilters");
         }
 
         private void расширенныеToolStripMenuItem_Click(object sender, EventArgs e)
         {
             стандартныеToolStripMenuItem.Checked = false;
             расширенныеToolStripMenuItem.Checked = true;
-            videoFormats.Clear();
-            videoFormats.AddRange(videoFormatsExtended);
+
+            SetFilters("ExtendedFilters");
+
         }
         #endregion
     }
