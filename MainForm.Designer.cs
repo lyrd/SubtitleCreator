@@ -43,6 +43,7 @@
             this.стандартныеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.расширенныеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSL_About = new System.Windows.Forms.ToolStripButton();
+            this.testTB = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -156,11 +157,20 @@
             this.tSL_About.Size = new System.Drawing.Size(86, 22);
             this.tSL_About.Text = "О программе";
             // 
+            // testTB
+            // 
+            this.testTB.Location = new System.Drawing.Point(12, 84);
+            this.testTB.Multiline = true;
+            this.testTB.Name = "testTB";
+            this.testTB.Size = new System.Drawing.Size(822, 228);
+            this.testTB.TabIndex = 5;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(846, 353);
+            this.Controls.Add(this.testTB);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.groupBox1);
@@ -194,6 +204,7 @@
         private System.Windows.Forms.ToolStripMenuItem форматыToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem стандартныеToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem расширенныеToolStripMenuItem;
+        private System.Windows.Forms.TextBox testTB;
     }
 }
 

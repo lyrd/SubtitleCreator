@@ -35,6 +35,7 @@ namespace SubtitleCreator
          *нормировка
          *фильтры сохр. в файле                      †
          *exceptions
+         *switch
          */
 
         /*
@@ -59,10 +60,19 @@ namespace SubtitleCreator
         private string filter1 = "";
         private string filter2 = "";
 
-        static private string iniFilePath = Directory.GetCurrentDirectory() + "\\FileFilters.ini";
+        private string iniFilePath = Directory.GetCurrentDirectory() + "\\FileFilters.ini";
         private string formText = "Subtitle Creator v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         private enum Status { idle, in_work };
         private Status status = Status.idle;
+
+        //Struct?
+        private const byte frameLenght = 50;
+        private const float frameOverlap = 0.5F;
+        private const byte wordMinSize = (byte)((200 / frameLenght) / (1 - frameOverlap));
+        private const byte wordMinDistance = (byte)(wordMinSize * 0.5F);
+
+        private float[] nornalizeData;
+        private short[] rawData;
 
         #region Methods
         private string Transliteration(string source)
@@ -183,6 +193,12 @@ namespace SubtitleCreator
 
                     buffer = null;
                     //sampleBuffer = null;
+
+                    //test TODO return
+                    rawData = sampleBuffer;
+                    sampleBuffer = null;
+                    //test
+
                     GC.Collect();
                 }
                 else
@@ -235,6 +251,28 @@ namespace SubtitleCreator
             //        MessageBox.Show("Only works with 16 bit audio");
             //    }
             //}     
+
+            //wavFile.normalizedData = new double[sampleNumber];
+            nornalizeData = new float[rawData.Length];
+
+            short minData = rawData.Min();
+            short maxData = rawData.Max();
+
+            testTB.Text += minData + "\r\n";
+            testTB.Text += maxData + "\r\n";
+
+            //minData = Math.Abs(minData);
+            //maxData = Math.Abs(maxData);
+
+            //short maxAbs = Math.Max(minData, maxData);
+            short maxAbs = Math.Max(Math.Abs(minData), Math.Abs(maxData));
+
+            testTB.Text += maxAbs + "\r\n";
+
+            //for (uint32_t i = 0; i < sampleNumber; i++)
+            //{
+            //    wavFile.normalizedData[i] = static_cast<double>(wavFile.rawData[i]) / maxAbs;
+            //}
 
         }
 
