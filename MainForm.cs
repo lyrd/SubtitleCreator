@@ -71,6 +71,7 @@ namespace SubtitleCreator
         private const byte wordMinSize = (byte)((200 / frameLenght) / (1 - frameOverlap));
         private const byte wordMinDistance = (byte)(wordMinSize * 0.5F);
 
+        private uint sampleNumber;
         private float[] nornalizeData;
         private short[] rawData;
 
@@ -168,11 +169,11 @@ namespace SubtitleCreator
             return output;
         }
 
-        //type
-        //"StandardFilters"
-        //"ExtendedFilters"
         private void SetFilters(string type)
         {
+            //type
+            //"StandardFilters"
+            //"ExtendedFilters"
             using (IniFile ini = new IniFile(iniFilePath))
             {
                 filter1 = ini.IniReadValue(type, "filter1");
@@ -180,9 +181,9 @@ namespace SubtitleCreator
             }
         }
 
-        private void ReadWavDataChunk()
+        private object[] ReadWavDataChunk(string _outputAudioFile)//short
         {
-            using (WaveFileReader reader = new WaveFileReader(outputAudioFile))
+            using (WaveFileReader reader = new WaveFileReader(_outputAudioFile))
             {
                 if (reader.WaveFormat.BitsPerSample == 16)
                 {
@@ -190,22 +191,40 @@ namespace SubtitleCreator
                     int read = reader.Read(buffer, 0, buffer.Length);
                     short[] sampleBuffer = new short[read / 2];
                     Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
-
+                    
                     buffer = null;
-                    //sampleBuffer = null;
 
-                    //test TODO return
-                    rawData = sampleBuffer;
-                    sampleBuffer = null;
-                    //test
+                    uint _sampleNumber = (uint)sampleBuffer.Length;   
 
                     GC.Collect();
+
+                    object[] ret = { _sampleNumber, sampleBuffer };
+                    return ret;
                 }
                 else
                 {
+                    object[] temp = { 0, 0, 0 };
                     MessageBox.Show("Only works with 16 bit audio");
+                    return temp;
                 }
             }
+        }
+
+        private static float[] Normalization(short[] _rawData)
+        {
+            uint _sampleNumber = (uint)_rawData.Length;
+            float[] _nornalizeData = new float[_sampleNumber];
+
+            float minData = (float)Math.Abs((float)_rawData.Min());
+            float maxData = (float)Math.Abs((float)_rawData.Max());
+            float max = Math.Max(minData, maxData);
+
+            for (uint i = 0; i < _sampleNumber; i++)
+            {
+                _nornalizeData[i] = _rawData[i] / max;
+            }
+
+            return _nornalizeData;
         }
         #endregion
 
@@ -213,11 +232,12 @@ namespace SubtitleCreator
         private static void SaveIntoFile(short[] mas, string name)
         {
             StreamWriter str = new StreamWriter(name + ".txt");
-            for (int i = 0; i < mas.Length; i++)
+            for (uint i = 0; i < mas.Length; i++)
             {
                 str.WriteLine(mas[i]);
             }
             str.Close();
+            str.Dispose();
         }
 
         private static void SaveIntoFile(string variable, string name)
@@ -225,6 +245,7 @@ namespace SubtitleCreator
             StreamWriter sw = new StreamWriter(name + ".txt");
             sw.Write(variable);
             sw.Close();
+            sw.Dispose();
         }
         #endregion
 
@@ -252,28 +273,24 @@ namespace SubtitleCreator
             //    }
             //}     
 
-            //wavFile.normalizedData = new double[sampleNumber];
-            nornalizeData = new float[rawData.Length];
+            //nornalizeData = new float[sampleNumber];//rawData.Length
 
-            short minData = rawData.Min();
-            short maxData = rawData.Max();
+            ////int minData = rawData.Min();
+            ////int maxData = rawData.Max();
+            ////int maxAbs = Math.Max(Math.Abs(minData), Math.Abs(maxData));
 
-            testTB.Text += minData + "\r\n";
-            testTB.Text += maxData + "\r\n";
+            //ushort minData = (ushort)Math.Abs((ushort)rawData.Min());
+            //ushort maxData = (ushort)Math.Abs((ushort)rawData.Max());
+            //ushort max = Math.Max(minData, maxData);
 
-            //minData = Math.Abs(minData);
-            //maxData = Math.Abs(maxData);
+            ////testTB.Text += "maxAbs " + max + "\r\n";
+            ////testTB.Text += "min " + minData + "\r\n";
+            ////testTB.Text += "max " + maxData + "\r\n";
 
-            //short maxAbs = Math.Max(minData, maxData);
-            short maxAbs = Math.Max(Math.Abs(minData), Math.Abs(maxData));
-
-            testTB.Text += maxAbs + "\r\n";
-
-            //for (uint32_t i = 0; i < sampleNumber; i++)
+            //for (uint i = 0; i < sampleNumber; i++)
             //{
-            //    wavFile.normalizedData[i] = static_cast<double>(wavFile.rawData[i]) / maxAbs;
+            //    nornalizeData[i] = rawData[i] / max;
             //}
-
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -290,7 +307,7 @@ namespace SubtitleCreator
                 try
                 {
                     timerStatusChecker.Start();
-                    Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));                   
+                    //Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));                   
                 }
                 catch
                 {
@@ -312,7 +329,14 @@ namespace SubtitleCreator
 
             if (!this.Focused && status == Status.idle)
             {
-                ReadWavDataChunk();
+                //ReadWavDataChunk(outputAudioFile);
+                object[] tempObj = new object[2];
+                ReadWavDataChunk(outputAudioFile).CopyTo(tempObj, 0);
+                sampleNumber = (uint)tempObj[0];
+                rawData = new short[sampleNumber];
+                rawData = (short[])tempObj[1];
+                tempObj = null;
+                GC.Collect();
 
                 this.Activate();
 

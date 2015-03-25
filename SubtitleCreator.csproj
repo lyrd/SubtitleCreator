@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NAudio">
-      <HintPath>..\..\..\Desktop\ДИПЛОМ\program\testWAV\NAudio.dll</HintPath>
+      <HintPath>.\NAudio.dll</HintPath>
     </Reference>
     <Reference Include="OperationWithFiles">
       <HintPath>.\OperationWithFiles.dll</HintPath>

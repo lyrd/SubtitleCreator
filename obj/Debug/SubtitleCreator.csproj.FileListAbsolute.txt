@@ -22,3 +22,6 @@ C:\Users\Anton\Documents\GitHub\SubtitleCreator\obj\Debug\SubtitleCreator.csproj
 C:\Users\Molokanov\Documents\GitHub\SubtitleCreator\bin\Debug\NAudio.dll
 C:\Users\Molokanov\Documents\GitHub\SubtitleCreator\bin\Debug\OperationWithFiles.dll
 C:\Users\Molokanov\Documents\GitHub\SubtitleCreator\bin\Debug\FileFilters.ini
+C:\Users\Anton\Documents\GitHub\SubtitleCreator\bin\Debug\FileFilters.ini
+C:\Users\Anton\Documents\GitHub\SubtitleCreator\bin\Debug\NAudio.dll
+C:\Users\Anton\Documents\GitHub\SubtitleCreator\bin\Debug\OperationWithFiles.dll
