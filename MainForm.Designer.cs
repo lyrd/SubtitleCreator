@@ -30,11 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.btnTest = new System.Windows.Forms.Button();
             this.tBInputVideo = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnOpen = new System.Windows.Forms.Button();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.timerStatusChecker = new System.Windows.Forms.Timer(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tSL_File = new System.Windows.Forms.ToolStripDropDownButton();
@@ -44,8 +45,11 @@
             this.расширенныеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSL_About = new System.Windows.Forms.ToolStripButton();
             this.testTB = new System.Windows.Forms.TextBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.groupBox1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnTest
@@ -85,13 +89,6 @@
             this.btnOpen.Text = "Обзор";
             this.btnOpen.UseVisualStyleBackColor = true;
             this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 318);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(822, 23);
-            this.progressBar1.TabIndex = 3;
             // 
             // timerStatusChecker
             // 
@@ -159,17 +156,40 @@
             // 
             // testTB
             // 
-            this.testTB.Location = new System.Drawing.Point(12, 84);
+            this.testTB.Location = new System.Drawing.Point(786, 12);
             this.testTB.Multiline = true;
             this.testTB.Name = "testTB";
-            this.testTB.Size = new System.Drawing.Size(822, 228);
+            this.testTB.Size = new System.Drawing.Size(31, 23);
             this.testTB.TabIndex = 5;
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(12, 318);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(822, 23);
+            this.progressBar1.TabIndex = 3;
+            // 
+            // chart1
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
+            this.chart1.Location = new System.Drawing.Point(18, 84);
+            this.chart1.Name = "chart1";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Color = System.Drawing.Color.Blue;
+            series1.Name = "Series1";
+            this.chart1.Series.Add(series1);
+            this.chart1.Size = new System.Drawing.Size(816, 228);
+            this.chart1.TabIndex = 6;
+            this.chart1.Text = "chart1";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(846, 353);
+            this.Controls.Add(this.chart1);
             this.Controls.Add(this.testTB);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.progressBar1);
@@ -184,6 +204,7 @@
             this.groupBox1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -195,7 +216,6 @@
         private System.Windows.Forms.TextBox tBInputVideo;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnOpen;
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Timer timerStatusChecker;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton tSL_File;
@@ -205,6 +225,8 @@
         private System.Windows.Forms.ToolStripMenuItem стандартныеToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem расширенныеToolStripMenuItem;
         private System.Windows.Forms.TextBox testTB;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
     }
 }
 

@@ -54,7 +54,7 @@ namespace SubtitleCreator
 
         private string inputVideoFile = "";
         private string outputAudioFile = "";
-        private string name = ""; 
+        private string name = "";
         private string format = "wav";
 
         private string filter1 = "";
@@ -72,81 +72,35 @@ namespace SubtitleCreator
         private const byte wordMinDistance = (byte)(wordMinSize * 0.5F);
 
         private uint sampleNumber;
-        private float[] nornalizeData;
+        private double[] nornalizeData;//float
         private short[] rawData;
 
+        //private double epsCPP = 2.22044604925031E-16;
+        //private double epsCS = Double.Epsilon;
+        private double epsilon;
+
+        //Параметры энтропии
+        const byte entropyBins = 75;
+        const double entropyThreshold = 0.1;
+
         #region Methods
+        private double Epsilon()
+        {
+            double _epsilon = 1d;
+            double tmp = 1d;
+            while ((1d + (tmp /= 2d)) != 1d) _epsilon = tmp;
+            return _epsilon;
+        }
+
         private string Transliteration(string source)
         {
-            #region Letters
             Dictionary<string, string> letters = new Dictionary<string, string>();
-            letters.Add("а", "a");
-            letters.Add("б", "b");
-            letters.Add("в", "v");
-            letters.Add("г", "g");
-            letters.Add("д", "d");
-            letters.Add("е", "e");
-            letters.Add("ё", "yo");
-            letters.Add("ж", "zh");
-            letters.Add("з", "z");
-            letters.Add("и", "i");
-            letters.Add("й", "j");
-            letters.Add("к", "k");
-            letters.Add("л", "l");
-            letters.Add("м", "m");
-            letters.Add("н", "n");
-            letters.Add("о", "o");
-            letters.Add("п", "p");
-            letters.Add("р", "r");
-            letters.Add("с", "s");
-            letters.Add("т", "t");
-            letters.Add("у", "u");
-            letters.Add("ф", "f");
-            letters.Add("х", "h");
-            letters.Add("ц", "c");
-            letters.Add("ч", "ch");
-            letters.Add("ш", "sh");
-            letters.Add("щ", "sch");
-            letters.Add("ъ", "j");
-            letters.Add("ы", "i");
-            letters.Add("ь", "j");
-            letters.Add("э", "e");
-            letters.Add("ю", "yu");
-            letters.Add("я", "ya");
-            letters.Add("А", "A");
-            letters.Add("Б", "B");
-            letters.Add("В", "V");
-            letters.Add("Г", "G");
-            letters.Add("Д", "D");
-            letters.Add("Е", "E");
-            letters.Add("Ё", "Yo");
-            letters.Add("Ж", "Zh");
-            letters.Add("З", "Z");
-            letters.Add("И", "I");
-            letters.Add("Й", "J");
-            letters.Add("К", "K");
-            letters.Add("Л", "L");
-            letters.Add("М", "M");
-            letters.Add("Н", "N");
-            letters.Add("О", "O");
-            letters.Add("П", "P");
-            letters.Add("Р", "R");
-            letters.Add("С", "S");
-            letters.Add("Т", "T");
-            letters.Add("У", "U");
-            letters.Add("Ф", "F");
-            letters.Add("Х", "H");
-            letters.Add("Ц", "C");
-            letters.Add("Ч", "Ch");
-            letters.Add("Ш", "Sh");
-            letters.Add("Щ", "Sch");
-            letters.Add("Ъ", "J");
-            letters.Add("Ы", "I");
-            letters.Add("Ь", "J");
-            letters.Add("Э", "E");
-            letters.Add("Ю", "Yu");
-            letters.Add("Я", "Ya");
-            #endregion
+
+            string[,] setOfLetters ={ { "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я" },
+                                    { "a", "b", "v", "g", "d", "e", "yo", "zh", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "c", "ch", "sh", "sch", "j", "i", "j", "e", "yu", "ya", "A", "B", "V", "G", "D", "E", "Yo", "Zh", "Z", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "C", "Ch", "Sh", "Sch", "J", "I", "J", "E", "Yu", "Ya" }};
+
+            for (byte i = 0; i < setOfLetters.GetLength(1); i++)
+                letters.Add(setOfLetters[0, i], setOfLetters[1, i]);
 
             foreach (KeyValuePair<string, string> pair in letters)
             {
@@ -154,19 +108,6 @@ namespace SubtitleCreator
             }
 
             return source;
-        }
-
-        private string FormatListBuilder(ArrayList _formats)
-        {
-            string output = "(";
-
-            for (int i = 0; i < _formats.Count; i++)
-                output += String.Format("*{0}, ", _formats[i]);
-
-            output = output.Substring(0, output.Length - 2);
-            output += ")";
-
-            return output;
         }
 
         private void SetFilters(string type)
@@ -191,12 +132,12 @@ namespace SubtitleCreator
                     int read = reader.Read(buffer, 0, buffer.Length);
                     short[] sampleBuffer = new short[read / 2];
                     Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
-                    
-                    buffer = null;
 
-                    uint _sampleNumber = (uint)sampleBuffer.Length;   
+                    //buffer = null;
 
-                    GC.Collect();
+                    uint _sampleNumber = (uint)sampleBuffer.Length;
+
+                    //GC.Collect();
 
                     object[] ret = { _sampleNumber, sampleBuffer };
                     return ret;
@@ -210,14 +151,14 @@ namespace SubtitleCreator
             }
         }
 
-        private static float[] Normalization(short[] _rawData)
+        private static double[] Normalization(short[] _rawData)//float
         {
             uint _sampleNumber = (uint)_rawData.Length;
-            float[] _nornalizeData = new float[_sampleNumber];
+            double[] _nornalizeData = new double[_sampleNumber];
 
-            float minData = (float)Math.Abs((float)_rawData.Min());
-            float maxData = (float)Math.Abs((float)_rawData.Max());
-            float max = Math.Max(minData, maxData);
+            double minData = (double)Math.Abs((double)_rawData.Min());
+            double maxData = (double)Math.Abs((double)_rawData.Max());
+            double max = Math.Max(minData, maxData);
 
             for (uint i = 0; i < _sampleNumber; i++)
             {
@@ -225,6 +166,74 @@ namespace SubtitleCreator
             }
 
             return _nornalizeData;
+        }
+
+        //                      ...          ...         ...          ENTROPY_BINS(75)  -1             1
+        double Entropy(double[] source, uint start, uint finish, uint binsCount, double minRaw, double maxRaw) //32_t 32_t 8_t
+        {
+            double entropy = 0;
+
+            double binSize = Math.Abs(maxRaw - minRaw) / (binsCount);
+            if (Math.Abs(binSize) < epsilon)
+            {
+                return 0;
+            }
+
+            double[] p = new double[binsCount];
+            for (uint i = 0; i < binsCount; i++) //8_t
+            {
+                p[i] = 0d;//0.
+            }
+
+            //Расчет вероятностей
+            uint index;//8_t
+            for (uint i = start; i <= finish; i++) //32_t
+            {
+                double value = source[i];
+                index = (uint)Math.Floor((value - minRaw) / binSize);
+
+                if (index >= binsCount)
+                {
+                    index = binsCount - 1;
+                }
+
+                p[index] += 1d;//1.
+            }
+
+            //Нормализация вероятностей
+            uint size = finish - start + 1;//8_t
+            for (uint i = 0; i < binsCount; i++)//8_t
+            {
+                p[i] /= size;
+            }
+
+            //Вычисление энтропии
+            for (uint i = 0; i < binsCount; i++) //8_t
+            {
+                if (p[i] > epsilon)
+                {
+                    entropy += p[i] * Math.Log(p[i], 2);
+                }
+            }
+
+            //p = null;
+            //GC.Collect();
+
+            entropy = -entropy;
+            return entropy;
+        }
+
+        double RMS(short[] source, uint start, uint finish)  //int16_t uint32_t uint32_t
+        {
+            double value = 0;
+
+            for (uint i = start; i <= finish; i++)
+            {
+                value += source[i] * source[i];
+            }
+            value /= (finish - start + 1);
+
+            return Math.Sqrt(value);
         }
         #endregion
 
@@ -291,6 +300,12 @@ namespace SubtitleCreator
             //{
             //    nornalizeData[i] = rawData[i] / max;
             //}
+
+            //MessageBox.Show(epsCPP.ToString());
+            //MessageBox.Show(epsCS.ToString());     
+
+            //MessageBox.Show(String.Format("{0}", double.MaxValue)); //1,79769313486232E+308
+            //MessageBox.Show(String.Format("{0}", float.MaxValue)); //3,402823E+38
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -307,7 +322,7 @@ namespace SubtitleCreator
                 try
                 {
                     timerStatusChecker.Start();
-                    //Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));                   
+                    Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
                 }
                 catch
                 {
@@ -329,23 +344,53 @@ namespace SubtitleCreator
 
             if (!this.Focused && status == Status.idle)
             {
-                //ReadWavDataChunk(outputAudioFile);
                 object[] tempObj = new object[2];
+
                 ReadWavDataChunk(outputAudioFile).CopyTo(tempObj, 0);
+
                 sampleNumber = (uint)tempObj[0];
                 rawData = new short[sampleNumber];
                 rawData = (short[])tempObj[1];
-                tempObj = null;
-                GC.Collect();
+
+                //tempObj = null;
+                //GC.Collect();
+
+                nornalizeData = new double[sampleNumber];
+                Normalization(rawData).CopyTo(nornalizeData, 0);
+
+                //rawData = null;
+                //GC.Collect();
 
                 this.Activate();
 
-                timerStatusChecker.Stop(); 
+                #region TEST GRAPH
+                //short min = rawData.Min();
+                //short max = rawData.Max();
+                ////int[] coords_raw = { 0, (int)sampleNumber, short.MinValue, short.MaxValue };
+                ////int[] coords_raw = { 0, (int)sampleNumber, min, max };
+                //int[] coords_raw = { 0, (int)sampleNumber, -max, max };
+                //int[] coords_norm = { 0, (int)sampleNumber, -1, 1 };
+
+                //chart1.ChartAreas[0].AxisX.Minimum = coords_raw[0];
+                //chart1.ChartAreas[0].AxisX.Maximum = coords_raw[1];
+
+                //chart1.ChartAreas[0].AxisY.Minimum = coords_raw[2];
+                //chart1.ChartAreas[0].AxisY.Maximum = coords_raw[3];
+
+                //for (int i = 0; i < sampleNumber; i++)
+                //    chart1.Series[0].Points.AddXY(i, rawData[i]);
+
+                //chart1.SaveImage("rawData.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                #endregion
+
+                timerStatusChecker.Stop();
             }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            epsilon = Epsilon();
+
             File.SetAttributes(iniFilePath, FileAttributes.ReadOnly);
 
             this.Text = formText;
@@ -353,6 +398,13 @@ namespace SubtitleCreator
             if (стандартныеToolStripMenuItem.Checked) { SetFilters("StandardFilters"); }
 
             if (расширенныеToolStripMenuItem.Checked) { SetFilters("ExtendedFilters"); }
+
+            #region TEST GRAPH
+            chart1.ChartAreas[0].CursorX.IsUserEnabled = true;
+            chart1.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
+            chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+            chart1.ChartAreas[0].AxisX.ScrollBar.IsPositionedInside = true;
+            #endregion
         }
 
         private void стандартныеToolStripMenuItem_Click(object sender, EventArgs e)
