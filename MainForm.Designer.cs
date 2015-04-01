@@ -40,9 +40,9 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tSL_File = new System.Windows.Forms.ToolStripDropDownButton();
             this.tSL_Settings = new System.Windows.Forms.ToolStripDropDownButton();
-            this.форматыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.стандартныеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.расширенныеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.formatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.standartFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extendedFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSL_About = new System.Windows.Forms.ToolStripButton();
             this.testTB = new System.Windows.Forms.TextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
@@ -115,35 +115,35 @@
             // tSL_Settings
             // 
             this.tSL_Settings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.форматыToolStripMenuItem});
+            this.formatsMenuItem});
             this.tSL_Settings.Name = "tSL_Settings";
             this.tSL_Settings.Size = new System.Drawing.Size(80, 22);
             this.tSL_Settings.Text = "Настройки";
             // 
-            // форматыToolStripMenuItem
+            // formatsMenuItem
             // 
-            this.форматыToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.стандартныеToolStripMenuItem,
-            this.расширенныеToolStripMenuItem});
-            this.форматыToolStripMenuItem.Name = "форматыToolStripMenuItem";
-            this.форматыToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
-            this.форматыToolStripMenuItem.Text = "Форматы";
+            this.formatsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.standartFiltersMenuItem,
+            this.extendedFiltersMenuItem});
+            this.formatsMenuItem.Name = "formatsMenuItem";
+            this.formatsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.formatsMenuItem.Text = "Форматы";
             // 
-            // стандартныеToolStripMenuItem
+            // standartFiltersMenuItem
             // 
-            this.стандартныеToolStripMenuItem.Checked = true;
-            this.стандартныеToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.стандартныеToolStripMenuItem.Name = "стандартныеToolStripMenuItem";
-            this.стандартныеToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.стандартныеToolStripMenuItem.Text = "Стандартные";
-            this.стандартныеToolStripMenuItem.Click += new System.EventHandler(this.стандартныеToolStripMenuItem_Click);
+            this.standartFiltersMenuItem.Checked = true;
+            this.standartFiltersMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.standartFiltersMenuItem.Name = "standartFiltersMenuItem";
+            this.standartFiltersMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.standartFiltersMenuItem.Text = "Стандартные";
+            this.standartFiltersMenuItem.Click += new System.EventHandler(this.standartFiltersMenuItem_Click);
             // 
-            // расширенныеToolStripMenuItem
+            // extendedFiltersMenuItem
             // 
-            this.расширенныеToolStripMenuItem.Name = "расширенныеToolStripMenuItem";
-            this.расширенныеToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.расширенныеToolStripMenuItem.Text = "Расширенные";
-            this.расширенныеToolStripMenuItem.Click += new System.EventHandler(this.расширенныеToolStripMenuItem_Click);
+            this.extendedFiltersMenuItem.Name = "extendedFiltersMenuItem";
+            this.extendedFiltersMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.extendedFiltersMenuItem.Text = "Расширенные";
+            this.extendedFiltersMenuItem.Click += new System.EventHandler(this.extendedFiltersMenuItem_Click);
             // 
             // tSL_About
             // 
@@ -221,9 +221,9 @@
         private System.Windows.Forms.ToolStripDropDownButton tSL_File;
         private System.Windows.Forms.ToolStripDropDownButton tSL_Settings;
         private System.Windows.Forms.ToolStripButton tSL_About;
-        private System.Windows.Forms.ToolStripMenuItem форматыToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem стандартныеToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem расширенныеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem formatsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem standartFiltersMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extendedFiltersMenuItem;
         private System.Windows.Forms.TextBox testTB;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
