@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.ComponentModel;
+using System.ComponentModel;
 //using System.Data;
 //using System.Drawing;
 using System.IO;
@@ -104,26 +104,39 @@ namespace SubtitleCreator
 
         private object[] ReadWavDataChunk(string _outputAudioFile)//short
         {
-            using (WaveFileReader reader = new WaveFileReader(_outputAudioFile))
+            try
             {
-                if (reader.WaveFormat.BitsPerSample == 16)
+                using (WaveFileReader reader = new WaveFileReader(_outputAudioFile))
                 {
-                    byte[] buffer = new byte[reader.Length];
-                    int read = reader.Read(buffer, 0, buffer.Length);
-                    short[] sampleBuffer = new short[read / 2];
-                    Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
+                    if (reader.WaveFormat.BitsPerSample == 16)
+                    {
+                        byte[] buffer = new byte[reader.Length];
+                        int read = reader.Read(buffer, 0, buffer.Length);
+                        short[] sampleBuffer = new short[read / 2];
+                        Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
 
-                    uint _sampleNumber = (uint)sampleBuffer.Length;
+                        uint _sampleNumber = (uint)sampleBuffer.Length;
 
-                    object[] ret = { _sampleNumber, sampleBuffer };
-                    return ret;
+                        object[] ret = { _sampleNumber, sampleBuffer };
+                        return ret;
+                    }
+                    else
+                    {
+                        object[] temp = { null, null };
+                        MessageBox.Show("Only works with 16 bit audio");
+                        return temp;
+                    }
                 }
-                else
-                {
-                    object[] temp = { null, null };
-                    MessageBox.Show("Only works with 16 bit audio");
-                    return temp;
-                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                MessageBox.Show(String.Format("Звуковая дорожка не была извлечена\n{0}", ex.Message),
+                                "Ошибка",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+
+                object[] temp = { null, null };
+                return temp;
             }
         }
 
@@ -146,27 +159,6 @@ namespace SubtitleCreator
 
         #endregion
 
-        #region Methods for tests
-        private static void SaveIntoFile(short[] mas, string name)
-        {
-            StreamWriter str = new StreamWriter(name + ".txt");
-            for (uint i = 0; i < mas.Length; i++)
-            {
-                str.WriteLine(mas[i]);
-            }
-            str.Close();
-            str.Dispose();
-        }
-
-        private static void SaveIntoFile(string variable, string name)
-        {
-            StreamWriter sw = new StreamWriter(name + ".txt");
-            sw.Write(variable);
-            sw.Close();
-            sw.Dispose();
-        }
-        #endregion
-
         private void btnTest_Click(object sender, EventArgs e)
         {
             //forTests
@@ -177,24 +169,29 @@ namespace SubtitleCreator
             OpenFileDialog dialog = new OpenFileDialog();
 
             dialog.Filter = String.Format("Video Files {0}|{1}", filter1, filter2);
-            tBInputVideo.Text = inputVideoFile = dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : "err";
-            name = Transliteration(System.IO.Path.GetFileNameWithoutExtension(inputVideoFile)).Replace(' ', '_');
+
+            tBInputVideo.Text =
+                inputVideoFile =
+                dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : "err";
+
+            name = Transliteration(Path.GetFileNameWithoutExtension(inputVideoFile)).Replace(' ', '_');
+
             outputAudioFile = String.Format("{0}\\{1}.{2}", Directory.GetCurrentDirectory(), name, format);
 
             if (inputVideoFile != "err")
             {
                 try
                 {
-                    timerStatusChecker.Start();
                     Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
+                    timerStatusChecker.Start();
                 }
-                catch
+                catch (Win32Exception ex)
                 {
-                    //TODO: Exception
-                    MessageBox.Show("ffmpeg.exe не найден",
-                    "Ошибка",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBox.Show(String.Format("ffmpeg.exe\n{0}", ex.Message),
+                                    "Ошибка",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                    timerStatusChecker.Stop();
                 }
             }
         }
@@ -213,14 +210,23 @@ namespace SubtitleCreator
 
                 ReadWavDataChunk(outputAudioFile).CopyTo(tempObj, 0);
 
-                sampleNumber = (uint)tempObj[0];
-                rawData = new short[sampleNumber];
-                rawData = (short[])tempObj[1];
+                if (tempObj[0] != null && tempObj[1] != null)
+                {
+                    sampleNumber = (uint)tempObj[0];
+                    rawData = new short[sampleNumber];
+                    rawData = (short[])tempObj[1];
 
-                nornalizeData = new double[sampleNumber];
-                Normalization(rawData).CopyTo(nornalizeData, 0);
+                    nornalizeData = new double[sampleNumber];
+                    Normalization(rawData).CopyTo(nornalizeData, 0);
+                }
+                else 
+                { 
+                    //TODO: 
+                    MessageBox.Show("Что-то не так в:\ntimerStatusChecker_Tick"); 
+                }
 
                 this.Activate();
+                timerStatusChecker.Stop();
 
                 #region TEST GRAPH
                 //short min = rawData.Min();
@@ -241,8 +247,6 @@ namespace SubtitleCreator
 
                 //chart1.SaveImage("rawData.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
                 #endregion
-
-                timerStatusChecker.Stop();
             }
         }
 

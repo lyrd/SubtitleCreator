@@ -11,14 +11,7 @@ namespace SubtitleCreator
 {
     class Basic
     {
-        //private double epsilon;
-
-        //public Basic(double eps)
-        //{
-        //    epsilon = eps;
-        //}
-
-        static public double RMS(short[] source, uint start, uint finish)  //int16_t uint32_t uint32_t
+        public static double RMS(short[] source, uint start, uint finish)
         {
             double value = 0;
 
@@ -31,8 +24,7 @@ namespace SubtitleCreator
             return Math.Sqrt(value);
         }
 
-        //                      ...          ...         ...          ENTROPY_BINS(75)  -1             1
-        static public double Entropy(double[] source, uint start, uint finish, uint binsCount, double minRaw, double maxRaw)
+        public static double Entropy(double[] source, uint start, uint finish, uint binsCount, double minRaw, double maxRaw)
         {
             double entropy = 0;
 

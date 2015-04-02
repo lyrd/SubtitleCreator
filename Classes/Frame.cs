@@ -21,14 +21,14 @@ namespace SubtitleCreator
             this.mfcc = null;
         }
 
-        void Init(short[] source, double[] sourceNormalized, uint start, uint finish)
+        public void Init(short[] source, double[] sourceNormalized, uint start, uint finish)
         {
 
             this.rms = Basic.RMS(source, start, finish);
             this.entropy = Basic.Entropy(sourceNormalized, start, finish, Constants.entropyBins, -1, 1);
         }
 
-        double[] InitMFCC(double[] source, uint start, uint finish, short freq)
+        public double[] InitMFCC(double[] source, uint start, uint finish, short freq)
         {
 
             this.mfcc = MFCC.Transform(source, start, finish, Constants.mfccSize, freq, Constants.mfccFreqMin, Constants.mfccFreqMax);
