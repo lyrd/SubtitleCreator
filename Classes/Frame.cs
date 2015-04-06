@@ -13,12 +13,45 @@ namespace SubtitleCreator
         private double entropy;
         private double[] mfcc;
 
-        public Frame(UInt32 id)
+        public Frame(uint id)
         {
             this.id = id;
             this.rms = 0;
             this.entropy = 0;
             this.mfcc = null;
+        }
+
+        //тип имя
+        //{
+        //    get
+        //    {
+        //        // код аксессора для чтения из поля
+        //    }
+
+        //    set
+        //    {
+        //        // код аксессора для записи в поле
+        //    }
+        //}
+
+        public uint GetId
+        {
+            get { return this.id; }
+        }
+
+        public double GetRms
+        {
+            get { return this.rms; }
+        }
+
+        public double GetEntropy
+        {
+            get { return this.entropy; }
+        }
+
+        public double[] GetMfcc
+        {
+            get { return this.mfcc; }
         }
 
         public void Init(short[] source, double[] sourceNormalized, uint start, uint finish)

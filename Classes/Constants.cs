@@ -8,6 +8,28 @@ namespace SubtitleCreator
 {
     static class Constants
     {
+        // Hamming Window double -> decimal?
+
+        //Float - 7 digits (32 bit)
+        //Double-15-16 digits (64 bit)
+        //Decimal -28-29 significant digits (128 bit)
+
+        //float flt = 1F/3;
+        //double dbl = 1D/3;
+        //decimal dcm = 1M/3;
+        //Console.WriteLine("float: {0} double: {1} decimal: {2}", flt, dbl, dcm);
+
+        //Result :
+
+        //float: 0.3333333  
+        //double: 0.333333333333333  
+        //decimal: 0.3333333333333333333333333333
+
+        //Коэффициенты окна Хэмминга
+        public static readonly double alpha = 25d / 46d;
+        public static readonly double beta = (1d - alpha);
+        //public static readonly decimal betta = (1m - alpha) / 2m;
+
         //Длина фрейма (миллисекунды)
         public static readonly byte frameLenght = 50;
 
