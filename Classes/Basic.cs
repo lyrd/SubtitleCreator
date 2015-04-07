@@ -37,7 +37,7 @@ namespace SubtitleCreator
             double[] p = new double[binsCount];
             for (uint i = 0; i < binsCount; i++)
             {
-                p[i] = 0;//0.
+                p[i] = 0d;//0.
             }
 
             //Расчет вероятностей
@@ -52,7 +52,7 @@ namespace SubtitleCreator
                     index = binsCount - 1;
                 }
 
-                p[index] += 1;//1.
+                p[index] += 1d;//1.
             }
 
             //Нормализация вероятностей

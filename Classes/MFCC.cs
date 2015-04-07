@@ -4,9 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
+using System.Runtime.Serialization;
+
+//using size_t = System.UInt64;
+using size_t = System.UInt32;
+
 
 namespace SubtitleCreator
 {
+    [Serializable]
+    public class ArrayDimensionException : Exception
+    {
+        public ArrayDimensionException() { }
+        public ArrayDimensionException(string message) : base(message) { }
+        public ArrayDimensionException(string message, Exception ex) : base(message) { }
+        protected ArrayDimensionException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    }
+
     class MFCC
     {
 
@@ -32,7 +46,7 @@ namespace SubtitleCreator
 
             for (uint k = 0; k < length; k++)
             {
-                fourierCmplxRaw[k] = new Complex(0, 0);
+                fourierCmplxRaw[k] = new Complex(0d, 0d);
 
                 for (uint n = 0; n < length; n++)
                 {
@@ -47,8 +61,6 @@ namespace SubtitleCreator
                     if (useWindow)
                     {
                         //Окно Хэмминга
-                        //w = 0.54 - 0.46 * Math.Cos(2 * Math.PI * n / (length - 1));
-                        //w = 0.53836 - 0.46164 * Math.Cos(2 * Math.PI * n / (length - 1));
                         w = Constants.alpha - Constants.beta * Math.Cos(2 * Math.PI * n / (length - 1));
                     }
 
@@ -56,12 +68,89 @@ namespace SubtitleCreator
                 }
 
                 //Магнитуда
-                //fourierRaw[k] = Math.Sqrt(norm(fourierCmplxRaw[k]));
                 fourierRaw[k] = fourierCmplxRaw[k].Magnitude;
             };
 
             return fourierRaw;
         }
+
+        double[] FourierTransformFast(double[] source, uint length, bool useWindow)
+        {
+            //Расширить длину исходных данных до степени двойки
+            uint p2length = length;
+
+            //bool powerOfTwo = (length > 0) && !(length & (length - 1));
+            //assert("FFT input data size must have 2^n size" && powerOfTwo);
+            //// p2length = pow(2, ceil(log2(length)));
+
+            double[] fourierRaw = new double[length];
+            Complex[] fourierRawTmp = new Complex[length];
+
+            for (uint i = 0; i < p2length; i++)
+            {
+                //Каждый элемент - вещественная часть комплексного числа
+                if (i < length)
+                {
+                    fourierRawTmp[i] = new Complex(source[i], 0d);
+
+                    if (useWindow)
+                    {
+                        fourierRawTmp[i] *= (Constants.alpha - Constants.beta * Math.Cos(2 * Math.PI * i / (length - 1)));
+                    }
+
+                }
+                else
+                {
+                    fourierRawTmp[i] = new Complex(0d, 0d);
+                }
+            }
+
+            //Рекурсивные вычисления
+            FourierTransformFastRecursion(ref fourierRawTmp);
+
+            //Магнитуда
+            for (uint i = 0; i < length; i++)
+            {
+                fourierRaw[i] = fourierRawTmp[i].Magnitude;
+            }
+
+            return fourierRaw;
+        }
+
+        void FourierTransformFastRecursion(ref Complex[] data)
+        {
+
+            //Выход из рекурсии
+            size_t n = (size_t)data.Count();
+            if (n <= 1)
+            {
+                return;
+            }
+
+            //Разделение
+            Complex[] even = data.AsParallel().Where((s, index) => { return index % 2 == 0; }).ToArray();
+            Complex[] odd = data.AsParallel().Where((s, index) => { return index % 2 != 0; }).ToArray();
+
+            FourierTransformFastRecursion(ref even);
+            FourierTransformFastRecursion(ref odd);
+
+            //Объединение 
+            for (size_t i = 0; i < n / 2; i++)
+            {
+                Complex t = Complex.FromPolarCoordinates(1.0, -2 * Math.PI * i / n) * odd[i];
+                data[i] = even[i] + t;
+                data[i + n / 2] = even[i] - t;
+            }
+        }
+
+
+
+
+
+
+
+
+
 
         public static Complex[] Test()
         {

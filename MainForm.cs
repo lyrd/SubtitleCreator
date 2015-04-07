@@ -166,10 +166,19 @@ namespace SubtitleCreator
             //Complex comp = new Complex(1, 5);
             //MessageBox.Show(String.Format(new ComplexFormatter(), "Imaginary = {0}\nMagnitude = {1}\nPhase = {2}\nReal = {3}\nSquaredMagnitude = {4}",
             //    comp.Imaginary, comp.Magnitude, comp.Phase, comp.Real, Math.Pow(comp.Magnitude, 2)));
-            //decimal a = 25.0m / 46.0m;
-            //decimal b = (1.0m - a);// / 2.0m;
-            //MessageBox.Show(String.Format("{0}\n{1}", a, b));
-            //MessageBox.Show(String.Format("{0}\n{1}", Constants.alpha, Constants.beta));
+
+            ////comp = Complex.FromPolarCoordinates(comp.Magnitude, comp.Phase);
+            //Complex comp2 = Complex.FromPolarCoordinates(comp.Magnitude, comp.Phase);
+            //MessageBox.Show(String.Format("Polar = {0}", comp2));
+            ////decimal a = 25.0m / 46.0m;
+            ////decimal b = (1.0m - a);// / 2.0m;
+            ////MessageBox.Show(String.Format("{0}\n{1}", a, b));
+            ////MessageBox.Show(String.Format("{0}\n{1}", Constants.alpha, Constants.beta));
+
+            //Complex[] test = MFCC.Test();
+            //MessageBox.Show(test.Count().ToString());
+
+            //MessageBox.Show(Constants.wordMinSize.ToString());
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
