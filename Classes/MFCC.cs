@@ -9,16 +9,15 @@ using System.Runtime.Serialization;
 //using size_t = System.UInt64;
 using size_t = System.UInt32;
 
-
 namespace SubtitleCreator
 {
     [Serializable]
-    public class ArrayDimensionException : Exception
+    public class MFCCException : Exception
     {
-        public ArrayDimensionException() { }
-        public ArrayDimensionException(string message) : base(message) { }
-        public ArrayDimensionException(string message, Exception ex) : base(message) { }
-        protected ArrayDimensionException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        public MFCCException() { }
+        public MFCCException(string message) : base(message) { }
+        public MFCCException(string message, Exception ex) : base(message) { }
+        protected MFCCException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 
     class MFCC
@@ -28,18 +27,22 @@ namespace SubtitleCreator
         public static double[] Transform(double[] source, uint start, uint finish, byte mfccSize, short frequency, short freqMin, short freqMax)
         {
             uint sampleLength = finish - start + 1;
-            double p2length = Math.Pow(2, Math.Floor(Math.Log(sampleLength, 2)));
+            //double p2length = Math.Pow(2, Math.Floor(Math.Log(sampleLength, 2)));
+            uint p2length = (uint)Math.Pow(2, Math.Floor(Math.Log(sampleLength, 2)));
 
-            //double[] fourierRaw = FourierTransformFast(source + start, p2length, true);
+            double[] temp = new double[p2length];
+            Array.Copy(source, start, temp, 0, p2length);
 
-            //double[] melFilters = GetMelFilters(mfccSize, p2length, frequency, freqMin, freqMax);
-            //double[] logPower = CalcPower(fourierRaw, p2length, melFilters, mfccSize);
-            //double[] dctRaw = DctTransform(logPower, mfccSize);
-            double[] dctRaw = { 1, 2, 3 };//del
+            double[] fourierRaw = FourierTransformFast(temp, p2length, true);
+
+            double[,] melFilters = GetMelFilters(mfccSize, p2length, frequency, freqMin, freqMax);
+            double[] logPower = CalcPower(fourierRaw, p2length, melFilters, mfccSize);
+            double[] dctRaw = DctTransform(logPower, mfccSize);
+
             return dctRaw;
         }
 
-        double[] FourierTransform(double[] source, uint length, bool useWindow)
+        public static double[] FourierTransform(double[] source, uint length, bool useWindow)
         {
             Complex[] fourierCmplxRaw = new Complex[length];
             double[] fourierRaw = new double[length];
@@ -74,14 +77,10 @@ namespace SubtitleCreator
             return fourierRaw;
         }
 
-        double[] FourierTransformFast(double[] source, uint length, bool useWindow)
+        public static double[] FourierTransformFast(double[] source, uint length, bool useWindow)
         {
             //Расширить длину исходных данных до степени двойки
             uint p2length = length;
-
-            //bool powerOfTwo = (length > 0) && !(length & (length - 1));
-            //assert("FFT input data size must have 2^n size" && powerOfTwo);
-            //// p2length = pow(2, ceil(log2(length)));
 
             double[] fourierRaw = new double[length];
             Complex[] fourierRawTmp = new Complex[length];
@@ -117,7 +116,7 @@ namespace SubtitleCreator
             return fourierRaw;
         }
 
-        void FourierTransformFastRecursion(ref Complex[] data)
+        public static void FourierTransformFastRecursion(ref Complex[] data)
         {
 
             //Выход из рекурсии
@@ -143,26 +142,94 @@ namespace SubtitleCreator
             }
         }
 
-
-
-
-
-
-
-
-
-
-        public static Complex[] Test()
+        public static double[,] GetMelFilters(byte mfccSize, uint filterLength, short frequency, short freqMin, short freqMax)
         {
-            //Complex c1 = new Complex(12, 6);
-            Complex[] c2 = new Complex[4];
+            double[] fb = new double[mfccSize + 2];
+            fb[0] = FrequencyToMel(freqMin);
+            fb[mfccSize + 1] = FrequencyToMel(freqMax);
 
-            c2[0] = new Complex(3.0, 4.0);
-            c2[1] = new Complex(3.0, 4.0);
-            c2[2] = new Complex(3.0, 4.0);
-            c2[3] = new Complex(3.0, 4.0);
-            return c2;
+            for (ushort m = 1; m < mfccSize + 1; m++)
+            {
+                fb[m] = fb[0] + m * (fb[mfccSize + 1] - fb[0]) / (mfccSize + 1);
+            }
+
+            for (ushort m = 0; m < mfccSize + 2; m++)
+            {
+                fb[m] = MelToFrequency(fb[m]);
+
+                fb[m] = Math.Floor((filterLength + 1) * fb[m] / (double)frequency);
+
+                //TODO: "FT bin too small" if!(m > 0 && (fb[m] - fb[m-1]) < epsilon);
+            }
+
+            double[,] filterBanks = new double[mfccSize, filterLength];
+
+            for (ushort m = 1; m < mfccSize + 1; m++)
+            {
+                for (uint k = 0; k < filterLength; k++)
+                {
+
+                    if (fb[m - 1] <= k && k <= fb[m])
+                    {
+                        filterBanks[m - 1, k] = (k - fb[m - 1]) / (fb[m] - fb[m - 1]);
+
+                    }
+                    else if (fb[m] < k && k <= fb[m + 1])
+                    {
+                        filterBanks[m - 1, k] = (fb[m + 1] - k) / (fb[m + 1] - fb[m]);
+
+                    }
+                    else
+                    {
+                        filterBanks[m - 1, k] = 0;
+                    }
+                }
+            }
+
+            return filterBanks;
         }
 
+        public static double[] CalcPower(double[] fourierRaw, uint fourierLength, double[,] melFilters, byte mfccCount)
+        {
+
+            double[] logPower = new double[mfccCount];
+
+            for (ushort m = 0; m < mfccCount; m++)
+            {
+                logPower[m] = 0d;
+
+                for (uint k = 0; k < fourierLength; k++)
+                {
+                    logPower[m] += melFilters[m, k] * Math.Pow(fourierRaw[k], 2);
+                }
+
+                //TODO: "Spectrum power is less than zero" if !(logPower[m] < epsilon());
+
+                logPower[m] = Math.Log(logPower[m]);
+            }
+
+            return logPower;
+        }
+
+        public static double[] DctTransform(double[] data, uint length)
+        {
+
+            double[] dctTransform = new double[length];
+
+            for (ushort n = 0; n < length; n++)
+            {
+                dctTransform[n] = 0;
+
+                for (ushort m = 0; m < length; m++)
+                {
+                    dctTransform[n] += data[m] * Math.Cos(Math.PI * n * (m + 1d / 2d) / length);
+                }
+            }
+
+            return dctTransform;
+        }
+
+        public static double FrequencyToMel(double f) { return 1125d * Math.Log(1d + f / 700d); }
+        public static double MelToFrequency(double m) { return 700d * (Math.Exp(m / 1125d) - 1); }
     }
 }
