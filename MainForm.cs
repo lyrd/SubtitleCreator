@@ -11,7 +11,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Diagnostics;
 //using System.Collections;
-using NAudio.Wave;
+//using NAudio.Wave;
 using OperationWithFiles;
 using System.Numerics;
 
@@ -67,9 +67,9 @@ namespace SubtitleCreator
         private enum Status { idle, in_work };
         private Status status = Status.idle;
 
-        private uint sampleNumber;
-        private double[] nornalizeData;//float
-        private short[] rawData;
+        //private uint sampleNumber;
+        //private double[] nornalizeData;//float
+        //private short[] rawData;
 
         #region Methods
 
@@ -103,60 +103,124 @@ namespace SubtitleCreator
             }
         }
 
-        private object[] ReadWavDataChunk(string _outputAudioFile)//short
+        private void TEST_ReadData()
         {
+            testChart.Series[0].Points.Clear();
+
+            object[] tempObj = new object[2];
+
+            WavData.ReadWavDataChunk("female1\\2.wav").CopyTo(tempObj, 0);
+
             try
             {
-                using (WaveFileReader reader = new WaveFileReader(_outputAudioFile))
+                WavData.SampleNumber = (uint)tempObj[0];
+                WavData.RawData = new short[WavData.SampleNumber];
+                WavData.RawData = (short[])tempObj[1];
+
+                WavData.NornalizeData = new double[WavData.SampleNumber];
+                WavData.Normalization(WavData.RawData).CopyTo(WavData.NornalizeData, 0);
+            }
+            catch (WavException ex)
+            {
+                MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            //short min = WavData.RawData.Min();
+            //short max = WavData.RawData.Max();
+
+            //bool isNorm = testCheckBox.Checked ? true : false;
+            //int[] coords_raw = { 0, (int)WavData.SampleNumber, -max, max };
+            //int[] coords_norm = { 0, (int)WavData.SampleNumber, -1, 1 };
+
+            //if (isNorm)
+            //{
+            //    testChart.ChartAreas[0].AxisX.Minimum = coords_norm[0];
+            //    testChart.ChartAreas[0].AxisX.Maximum = coords_norm[1];
+
+            //    testChart.ChartAreas[0].AxisY.Minimum = coords_norm[2];
+            //    testChart.ChartAreas[0].AxisY.Maximum = coords_norm[3];
+
+            //    for (int i = 0; i < WavData.SampleNumber; i++)
+            //        testChart.Series[0].Points.AddXY(i, WavData.NornalizeData[i]);
+            //}
+            //else
+            //{
+            //    testChart.ChartAreas[0].AxisX.Minimum = coords_raw[0];
+            //    testChart.ChartAreas[0].AxisX.Maximum = coords_raw[1];
+
+            //    testChart.ChartAreas[0].AxisY.Minimum = coords_raw[2];
+            //    testChart.ChartAreas[0].AxisY.Maximum = coords_raw[3];
+
+            //    for (int i = 0; i < WavData.SampleNumber; i++)
+            //        testChart.Series[0].Points.AddXY(i, WavData.RawData[i]);
+            //}
+        }
+
+        private static void TEST_SaveIntoFile<T>(T[] mas, string name)
+        {
+            using (StreamWriter str = new StreamWriter(name + ".txt"))
+            {
+                for (int i = 0; i < mas.Length; i++)
                 {
-                    if (reader.WaveFormat.BitsPerSample == 16)
-                    {
-                        byte[] buffer = new byte[reader.Length];
-                        int read = reader.Read(buffer, 0, buffer.Length);
-                        short[] sampleBuffer = new short[read / 2];
-                        Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
-
-                        uint _sampleNumber = (uint)sampleBuffer.Length;
-
-                        object[] ret = { _sampleNumber, sampleBuffer };
-                        return ret;
-                    }
-                    else
-                    {
-                        object[] temp = { null, null };
-                        MessageBox.Show("Only works with 16 bit audio");
-                        return temp;
-                    }
+                    str.WriteLine(mas[i]);
                 }
             }
-            catch (FileNotFoundException ex)
-            {
-                MessageBox.Show(String.Format("Звуковая дорожка не была извлечена\n{0}", ex.Message),
-                                "Ошибка",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-
-                object[] temp = { null, null };
-                return temp;
-            }
         }
 
-        private static double[] Normalization(short[] _rawData)//float
-        {
-            uint _sampleNumber = (uint)_rawData.Length;
-            double[] _nornalizeData = new double[_sampleNumber];
+        //private object[] ReadWavDataChunk(string _outputAudioFile)//short
+        //{
+        //    try
+        //    {
+        //        using (WaveFileReader reader = new WaveFileReader(_outputAudioFile))
+        //        {
+        //            if (reader.WaveFormat.BitsPerSample == 16)
+        //            {
+        //                byte[] buffer = new byte[reader.Length];
+        //                int read = reader.Read(buffer, 0, buffer.Length);
+        //                short[] sampleBuffer = new short[read / 2];
+        //                Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
 
-            double minData = (double)Math.Abs((double)_rawData.Min());
-            double maxData = (double)Math.Abs((double)_rawData.Max());
-            double max = Math.Max(minData, maxData);
+        //                uint _sampleNumber = (uint)sampleBuffer.Length;
 
-            for (uint i = 0; i < _sampleNumber; i++)
-            {
-                _nornalizeData[i] = _rawData[i] / max;
-            }
+        //                object[] ret = { _sampleNumber, sampleBuffer };
+        //                return ret;
+        //            }
+        //            else
+        //            {
+        //                object[] temp = { null, null };
+        //                MessageBox.Show("Only works with 16 bit audio");
+        //                return temp;
+        //            }
+        //        }
+        //    }
+        //    catch (FileNotFoundException ex)
+        //    {
+        //        MessageBox.Show(String.Format("Звуковая дорожка не была извлечена\n{0}", ex.Message),
+        //                        "Ошибка",
+        //                        MessageBoxButtons.OK,
+        //                        MessageBoxIcon.Error);
 
-            return _nornalizeData;
-        }
+        //        object[] temp = { null, null };
+        //        return temp;
+        //    }
+        //}
+
+        //private static double[] Normalization(short[] _rawData)//float
+        //{
+        //    uint _sampleNumber = (uint)_rawData.Length;
+        //    double[] _nornalizeData = new double[_sampleNumber];
+
+        //    double minData = (double)Math.Abs((double)_rawData.Min());
+        //    double maxData = (double)Math.Abs((double)_rawData.Max());
+        //    double max = Math.Max(minData, maxData);
+
+        //    for (uint i = 0; i < _sampleNumber; i++)
+        //    {
+        //        _nornalizeData[i] = _rawData[i] / max;
+        //    }
+
+        //    return _nornalizeData;
+        //}
 
         #endregion
 
@@ -179,6 +243,56 @@ namespace SubtitleCreator
             //MessageBox.Show(test.Count().ToString());
 
             //MessageBox.Show(Constants.wordMinSize.ToString());
+
+            TEST_ReadData();
+
+            double[] test = new double[50000];
+            //test = MFCC.Transform(WavData.NornalizeData, 0, Constants.frameLenght, Constants.mfccSize, 44100, Constants.mfccFreqMin, Constants.mfccFreqMax);
+            test = MFCC.Transform(WavData.NornalizeData, 0, 256, Constants.mfccSize, 44100, Constants.mfccFreqMin, Constants.mfccFreqMax);
+            //MFCC.Transform(WavData.NornalizeData, 0, Constants.frameLenght, Constants.mfccSize, 44100, Constants.mfccFreqMin, Constants.mfccFreqMax).CopyTo(test, 0);
+            //MessageBox.Show(Constants.sizemel[0] + "\t" + Constants.sizemel[1]);
+            TEST_SaveIntoFile(test, "testMFCC");
+
+            //testTB.Text += Constants.length + "\r\n";
+            //testTB.Text += Constants.p2length + "\r\n";
+            //testTB.Text += MFCC.FrequencyToMel(Constants.mfccFreqMin) +"\r\n"; //300
+            //testTB.Text += MFCC.FrequencyToMel(Constants.mfccFreqMax) + "\r\n";//8000
+            //testTB.Text += "\r\n";
+
+            for (int i = 0; i < Constants.fb.Length; i++)
+            {
+                testTB.Text += Math.Round(Constants.fb[i], 2) + "\t";
+            }
+
+            //testTB.Text += "\r\n";
+
+            //for (int i = 0; i < Constants.fb.Length; i++)
+            //{
+            //    testTB.Text += Math.Round(MFCC.MelToFrequency(Constants.fb[i]), 2) + "\t";
+            //}
+
+            //for (int i = 0; i < Constants.melFiltersWTF.GetLength(0); i++)//12
+            //{
+            //    for (int j = 0; j < Constants.melFiltersWTF.GetLength(1); j++)//32
+            //    {
+            //        testTB.Text += Constants.melFiltersWTF[i, j] + "\t";
+            //    }
+            //    testTB.Text += Environment.NewLine;
+            //}
+
+            //using (StreamWriter str = new StreamWriter("melFiltersWTF.txt"))
+            //{
+            //    for (int i = 0; i < Constants.melFiltersWTF.GetLength(0); i++)//12
+            //    {
+            //        for (int j = 0; j < Constants.melFiltersWTF.GetLength(1); j++)//32
+            //        {
+            //            str.Write(Constants.melFiltersWTF[i, j] + "\t");
+            //        }
+            //        str.Write("\r\n");
+            //    }
+            //}
+
+            //Process.Start("notepad.exe", "melFiltersWTF.txt");
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -225,22 +339,18 @@ namespace SubtitleCreator
             {
                 object[] tempObj = new object[2];
 
-                ReadWavDataChunk(outputAudioFile).CopyTo(tempObj, 0);
+                WavData.ReadWavDataChunk("female1.wav").CopyTo(tempObj, 0);
 
-                if (tempObj[0] != null && tempObj[1] != null)
+                try
                 {
-                    sampleNumber = (uint)tempObj[0];
-                    rawData = new short[sampleNumber];
-                    rawData = (short[])tempObj[1];
+                    WavData.SampleNumber = (uint)tempObj[0];
+                    WavData.RawData = new short[WavData.SampleNumber];
+                    WavData.RawData = (short[])tempObj[1];
 
-                    nornalizeData = new double[sampleNumber];
-                    Normalization(rawData).CopyTo(nornalizeData, 0);
+                    WavData.NornalizeData = new double[WavData.SampleNumber];
+                    WavData.Normalization(WavData.RawData).CopyTo(WavData.NornalizeData, 0);
                 }
-                else 
-                { 
-                    //TODO: 
-                    MessageBox.Show("Что-то не так в:\ntimerStatusChecker_Tick"); 
-                }
+                catch (WavException ex) { MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
                 this.Activate();
                 timerStatusChecker.Stop();
@@ -278,10 +388,10 @@ namespace SubtitleCreator
             if (extendedFiltersMenuItem.Checked) { SetFilters("ExtendedFilters"); }
 
             #region TEST GRAPH
-            chart1.ChartAreas[0].CursorX.IsUserEnabled = true;
-            chart1.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
-            chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
-            chart1.ChartAreas[0].AxisX.ScrollBar.IsPositionedInside = true;
+            testChart.ChartAreas[0].CursorX.IsUserEnabled = true;
+            testChart.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
+            testChart.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+            testChart.ChartAreas[0].AxisX.ScrollBar.IsPositionedInside = true;
             #endregion
         }
 

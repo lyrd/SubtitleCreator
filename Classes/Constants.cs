@@ -8,6 +8,12 @@ namespace SubtitleCreator
 {
     static class Constants
     {
+        public static double[,] melFiltersWTF = new double[12, 32];
+        public static double[] sizemel = new double[2];
+        public static double[] fb = new double[14];
+        public static double p2length;
+        public static double length;
+
         //Коэффициенты окга Хэмминга
         /// <summary>
         ///  alpha = 0,543478260869565
@@ -34,14 +40,15 @@ namespace SubtitleCreator
         public static readonly byte wordMinDistance = (byte)(wordMinSize * 0.5F);
 
         ///Количество MFCC коэффициетов
-        public static readonly byte mfccSize = 12;
+        public static readonly byte mfccSize = 10;//12
 
         ///Диапазон частот
         public static readonly short mfccFreqMin = 300;
-        public static readonly short mfccFreqMax = 4000;
+        public static readonly short mfccFreqMax = 8000;//4000
 
-        //Параметры энтропии
+        //Количество значений
         public static readonly byte entropyBins = 75;
+        //Порог энтропии
         public static readonly double entropyThreshold = 0.1;
 
         /// <summary>

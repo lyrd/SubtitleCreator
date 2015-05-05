@@ -20,11 +20,11 @@ namespace SubtitleCreator
         protected MFCCException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 
-    class MFCC
+    static class MFCC
     {
 
         //Выполнение преобразования MFCC
-        public static double[] Transform(double[] source, uint start, uint finish, byte mfccSize, short frequency, short freqMin, short freqMax)
+        public static double[] Transform(double[] source, uint start, uint finish, byte mfccSize, uint frequency, short freqMin, short freqMax)//short frequency
         {
             uint sampleLength = finish - start + 1;
             //double p2length = Math.Pow(2, Math.Floor(Math.Log(sampleLength, 2)));
@@ -34,15 +34,23 @@ namespace SubtitleCreator
             Array.Copy(source, start, temp, 0, p2length);
 
             double[] fourierRaw = FourierTransformFast(temp, p2length, true);
-
             double[,] melFilters = GetMelFilters(mfccSize, p2length, frequency, freqMin, freqMax);
+
             double[] logPower = CalcPower(fourierRaw, p2length, melFilters, mfccSize);
             double[] dctRaw = DctTransform(logPower, mfccSize);
+    
+            //TEST
+            Constants.length = sampleLength;
+            Constants.p2length = p2length;
+            Constants.sizemel[0] = melFilters.GetLength(0);
+            Constants.sizemel[1] = melFilters.GetLength(1);
+            Constants.melFiltersWTF = melFilters;
+            //TEST
 
-            return dctRaw;
+            return dctRaw;            
         }
 
-        public static double[] FourierTransform(double[] source, uint length, bool useWindow)
+        private static double[] FourierTransform(double[] source, uint length, bool useWindow)
         {
             Complex[] fourierCmplxRaw = new Complex[length];
             double[] fourierRaw = new double[length];
@@ -77,7 +85,7 @@ namespace SubtitleCreator
             return fourierRaw;
         }
 
-        public static double[] FourierTransformFast(double[] source, uint length, bool useWindow)
+        private static double[] FourierTransformFast(double[] source, uint length, bool useWindow)
         {
             //Расширить длину исходных данных до степени двойки
             uint p2length = length;
@@ -116,7 +124,7 @@ namespace SubtitleCreator
             return fourierRaw;
         }
 
-        public static void FourierTransformFastRecursion(ref Complex[] data)
+        private static void FourierTransformFastRecursion(ref Complex[] data)
         {
 
             //Выход из рекурсии
@@ -142,18 +150,18 @@ namespace SubtitleCreator
             }
         }
 
-        public static double[,] GetMelFilters(byte mfccSize, uint filterLength, short frequency, short freqMin, short freqMax)
+        private static double[,] GetMelFilters(byte mfccSize, uint filterLength, uint frequency, short freqMin, short freqMax)//short frequency
         {
             double[] fb = new double[mfccSize + 2];
             fb[0] = FrequencyToMel(freqMin);
             fb[mfccSize + 1] = FrequencyToMel(freqMax);
 
-            for (ushort m = 1; m < mfccSize + 1; m++)
+            for (byte m = 1; m < mfccSize + 1; m++)
             {
                 fb[m] = fb[0] + m * (fb[mfccSize + 1] - fb[0]) / (mfccSize + 1);
             }
 
-            for (ushort m = 0; m < mfccSize + 2; m++)
+            for (byte m = 0; m < mfccSize + 2; m++)
             {
                 fb[m] = MelToFrequency(fb[m]);
 
@@ -162,9 +170,23 @@ namespace SubtitleCreator
                 //TODO: "FT bin too small" if!(m > 0 && (fb[m] - fb[m-1]) < epsilon);
             }
 
+            //TEST
+            //for (byte m = 0; m < mfccSize + 2; m++)
+            //{
+            //    fb[m] = MelToFrequency(fb[m]);
+            //}
+
+            //for (byte m = 0; m < mfccSize + 2; m++)
+            //{
+            //    fb[m] = Math.Floor((filterLength + 1) * fb[m] / frequency);
+            //}
+
+            Constants.fb = fb;
+            //TEST
+
             double[,] filterBanks = new double[mfccSize, filterLength];
 
-            for (ushort m = 1; m < mfccSize + 1; m++)
+            for (byte m = 1; m < mfccSize + 1; m++)
             {
                 for (uint k = 0; k < filterLength; k++)
                 {
@@ -172,12 +194,10 @@ namespace SubtitleCreator
                     if (fb[m - 1] <= k && k <= fb[m])
                     {
                         filterBanks[m - 1, k] = (k - fb[m - 1]) / (fb[m] - fb[m - 1]);
-
                     }
-                    else if (fb[m] < k && k <= fb[m + 1])
+                    else if (fb[m] < k && k <= fb[m + 1])// (<= <=) (< <=)
                     {
                         filterBanks[m - 1, k] = (fb[m + 1] - k) / (fb[m + 1] - fb[m]);
-
                     }
                     else
                     {
@@ -189,7 +209,7 @@ namespace SubtitleCreator
             return filterBanks;
         }
 
-        public static double[] CalcPower(double[] fourierRaw, uint fourierLength, double[,] melFilters, byte mfccCount)
+        private static double[] CalcPower(double[] fourierRaw, uint fourierLength, double[,] melFilters, byte mfccCount)
         {
 
             double[] logPower = new double[mfccCount];
@@ -211,7 +231,7 @@ namespace SubtitleCreator
             return logPower;
         }
 
-        public static double[] DctTransform(double[] data, uint length)
+        private static double[] DctTransform(double[] data, uint length)
         {
 
             double[] dctTransform = new double[length];
@@ -229,7 +249,7 @@ namespace SubtitleCreator
             return dctTransform;
         }
 
-        public static double FrequencyToMel(double f) { return 1125d * Math.Log(1d + f / 700d); }
-        public static double MelToFrequency(double m) { return 700d * (Math.Exp(m / 1125d) - 1); }
+        private static double FrequencyToMel(double f) { return 1125d * Math.Log(1d + f / 700d); }
+        private static double MelToFrequency(double m) { return 700d * (Math.Exp(m / 1125d) - 1); }
     }
 }
