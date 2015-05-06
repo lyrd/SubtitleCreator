@@ -57,19 +57,15 @@ namespace SubtitleCreator
         private string inputVideoFile = "";
         private string outputAudioFile = "";
         private string name = "";
-        private string format = "wav";
+        private readonly string format = "wav";
 
         private string filter1 = "";
         private string filter2 = "";
 
-        private string iniFilePath = Directory.GetCurrentDirectory() + "\\FileFilters.ini";
-        private string formText = "Subtitle Creator v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        private readonly string iniFilePath = Directory.GetCurrentDirectory() + "\\FileFilters.ini";
+        private readonly string formText = "Subtitle Creator v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         private enum Status { idle, in_work };
         private Status status = Status.idle;
-
-        //private uint sampleNumber;
-        //private double[] nornalizeData;//float
-        //private short[] rawData;
 
         #region Methods
 
@@ -106,54 +102,50 @@ namespace SubtitleCreator
         private void TEST_ReadData()
         {
             testChart.Series[0].Points.Clear();
-
-            object[] tempObj = new object[2];
-
-            WavData.ReadWavDataChunk("female1\\2.wav").CopyTo(tempObj, 0);
-
+        
             try
             {
-                WavData.SampleNumber = (uint)tempObj[0];
-                WavData.RawData = new short[WavData.SampleNumber];
-                WavData.RawData = (short[])tempObj[1];
-
-                WavData.NornalizeData = new double[WavData.SampleNumber];
-                WavData.Normalization(WavData.RawData).CopyTo(WavData.NornalizeData, 0);
+                WavData.ReadWavDataChunk("female1\\2.wav");
             }
             catch (WavException ex)
             {
                 MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            //short min = WavData.RawData.Min();
-            //short max = WavData.RawData.Max();
+            //TEST_WavVisualization();
+        }
 
-            //bool isNorm = testCheckBox.Checked ? true : false;
-            //int[] coords_raw = { 0, (int)WavData.SampleNumber, -max, max };
-            //int[] coords_norm = { 0, (int)WavData.SampleNumber, -1, 1 };
+        private void TEST_WavVisualization()
+        {
+            short min = WavData.RawData.Min();
+            short max = WavData.RawData.Max();
 
-            //if (isNorm)
-            //{
-            //    testChart.ChartAreas[0].AxisX.Minimum = coords_norm[0];
-            //    testChart.ChartAreas[0].AxisX.Maximum = coords_norm[1];
+            bool isNorm = testCheckBox.Checked ? true : false;
+            int[] coords_raw = { 0, (int)WavData.SampleNumber, -max, max };
+            int[] coords_norm = { 0, (int)WavData.SampleNumber, -1, 1 };
 
-            //    testChart.ChartAreas[0].AxisY.Minimum = coords_norm[2];
-            //    testChart.ChartAreas[0].AxisY.Maximum = coords_norm[3];
+            if (isNorm)
+            {
+                testChart.ChartAreas[0].AxisX.Minimum = coords_norm[0];
+                testChart.ChartAreas[0].AxisX.Maximum = coords_norm[1];
 
-            //    for (int i = 0; i < WavData.SampleNumber; i++)
-            //        testChart.Series[0].Points.AddXY(i, WavData.NornalizeData[i]);
-            //}
-            //else
-            //{
-            //    testChart.ChartAreas[0].AxisX.Minimum = coords_raw[0];
-            //    testChart.ChartAreas[0].AxisX.Maximum = coords_raw[1];
+                testChart.ChartAreas[0].AxisY.Minimum = coords_norm[2];
+                testChart.ChartAreas[0].AxisY.Maximum = coords_norm[3];
 
-            //    testChart.ChartAreas[0].AxisY.Minimum = coords_raw[2];
-            //    testChart.ChartAreas[0].AxisY.Maximum = coords_raw[3];
+                for (int i = 0; i < WavData.SampleNumber; i++)
+                    testChart.Series[0].Points.AddXY(i, WavData.NornalizeData[i]);
+            }
+            else
+            {
+                testChart.ChartAreas[0].AxisX.Minimum = coords_raw[0];
+                testChart.ChartAreas[0].AxisX.Maximum = coords_raw[1];
 
-            //    for (int i = 0; i < WavData.SampleNumber; i++)
-            //        testChart.Series[0].Points.AddXY(i, WavData.RawData[i]);
-            //}
+                testChart.ChartAreas[0].AxisY.Minimum = coords_raw[2];
+                testChart.ChartAreas[0].AxisY.Maximum = coords_raw[3];
+
+                for (int i = 0; i < WavData.SampleNumber; i++)
+                    testChart.Series[0].Points.AddXY(i, WavData.RawData[i]);
+            }
         }
 
         private static void TEST_SaveIntoFile<T>(T[] mas, string name)
@@ -246,53 +238,32 @@ namespace SubtitleCreator
 
             TEST_ReadData();
 
-            double[] test = new double[50000];
-            //test = MFCC.Transform(WavData.NornalizeData, 0, Constants.frameLenght, Constants.mfccSize, 44100, Constants.mfccFreqMin, Constants.mfccFreqMax);
-            test = MFCC.Transform(WavData.NornalizeData, 0, 256, Constants.mfccSize, 44100, Constants.mfccFreqMin, Constants.mfccFreqMax);
-            //MFCC.Transform(WavData.NornalizeData, 0, Constants.frameLenght, Constants.mfccSize, 44100, Constants.mfccFreqMin, Constants.mfccFreqMax).CopyTo(test, 0);
-            //MessageBox.Show(Constants.sizemel[0] + "\t" + Constants.sizemel[1]);
-            TEST_SaveIntoFile(test, "testMFCC");
+            testTB.Text += "Sample Number: " + WavData.SampleNumber + "\r\n";
+            testTB.Text += "Frame Lenght: " + Constants.frameLenght + "\r\n";
+            testTB.Text += "Frame Overlap: " + Constants.frameLenght * Constants.frameOverlap + "\r\n";
 
-            //testTB.Text += Constants.length + "\r\n";
-            //testTB.Text += Constants.p2length + "\r\n";
-            //testTB.Text += MFCC.FrequencyToMel(Constants.mfccFreqMin) +"\r\n"; //300
-            //testTB.Text += MFCC.FrequencyToMel(Constants.mfccFreqMax) + "\r\n";//8000
-            //testTB.Text += "\r\n";
+            uint start = 0;
+            uint finish = start + Constants.frameLenght;
+            uint shift = (uint)(Constants.frameLenght * Constants.frameOverlap); 
+            List<Frame> frames = new List<Frame>();
 
-            for (int i = 0; i < Constants.fb.Length; i++)
+            testTB.Text += "Shift: " + shift + "\r\n";
+            testTB.Text += String.Format("{0}\t{1}\r\n", start, finish);
+
+            for (int i = 0; i < 10; i++ )
             {
-                testTB.Text += Math.Round(Constants.fb[i], 2) + "\t";
+                frames.Add(new Frame(i));
+
+                frames[i].Init(WavData.RawData, WavData.NornalizeData, start, finish);
+                frames[i].InitMFCC(WavData.NornalizeData, start, finish, Constants.sampleRate);
+                TEST_SaveIntoFile(frames[i].GetMfcc, "test\\testMFCC_id" + frames[i].GetId);
+
+                start += shift;
+                finish = start + Constants.frameLenght;
+
+                testTB.Text += String.Format("{0}\t{1}\r\n", start, finish);
             }
 
-            //testTB.Text += "\r\n";
-
-            //for (int i = 0; i < Constants.fb.Length; i++)
-            //{
-            //    testTB.Text += Math.Round(MFCC.MelToFrequency(Constants.fb[i]), 2) + "\t";
-            //}
-
-            //for (int i = 0; i < Constants.melFiltersWTF.GetLength(0); i++)//12
-            //{
-            //    for (int j = 0; j < Constants.melFiltersWTF.GetLength(1); j++)//32
-            //    {
-            //        testTB.Text += Constants.melFiltersWTF[i, j] + "\t";
-            //    }
-            //    testTB.Text += Environment.NewLine;
-            //}
-
-            //using (StreamWriter str = new StreamWriter("melFiltersWTF.txt"))
-            //{
-            //    for (int i = 0; i < Constants.melFiltersWTF.GetLength(0); i++)//12
-            //    {
-            //        for (int j = 0; j < Constants.melFiltersWTF.GetLength(1); j++)//32
-            //        {
-            //            str.Write(Constants.melFiltersWTF[i, j] + "\t");
-            //        }
-            //        str.Write("\r\n");
-            //    }
-            //}
-
-            //Process.Start("notepad.exe", "melFiltersWTF.txt");
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -337,20 +308,29 @@ namespace SubtitleCreator
 
             if (!this.Focused && status == Status.idle)
             {
-                object[] tempObj = new object[2];
+                //object[] tempObj = new object[2];
 
-                WavData.ReadWavDataChunk("female1.wav").CopyTo(tempObj, 0);
+                //WavData.ReadWavDataChunk("female1.wav").CopyTo(tempObj, 0);
+
+                //try
+                //{
+                //    WavData.SampleNumber = (uint)tempObj[0];
+                //    WavData.RawData = new short[WavData.SampleNumber];
+                //    WavData.RawData = (short[])tempObj[1];
+
+                //    WavData.NornalizeData = new double[WavData.SampleNumber];
+                //    WavData.Normalization(WavData.RawData).CopyTo(WavData.NornalizeData, 0);
+                //}
+                //catch (WavException ex) { MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
                 try
                 {
-                    WavData.SampleNumber = (uint)tempObj[0];
-                    WavData.RawData = new short[WavData.SampleNumber];
-                    WavData.RawData = (short[])tempObj[1];
-
-                    WavData.NornalizeData = new double[WavData.SampleNumber];
-                    WavData.Normalization(WavData.RawData).CopyTo(WavData.NornalizeData, 0);
+                    WavData.ReadWavDataChunk(outputAudioFile);
                 }
-                catch (WavException ex) { MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                catch (WavException ex)
+                {
+                    MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
                 this.Activate();
                 timerStatusChecker.Stop();

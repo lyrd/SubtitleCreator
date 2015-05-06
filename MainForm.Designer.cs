@@ -157,10 +157,10 @@
             // 
             // testTB
             // 
-            this.testTB.Location = new System.Drawing.Point(94, 84);
+            this.testTB.Location = new System.Drawing.Point(83, 84);
             this.testTB.Multiline = true;
             this.testTB.Name = "testTB";
-            this.testTB.Size = new System.Drawing.Size(740, 228);
+            this.testTB.Size = new System.Drawing.Size(751, 228);
             this.testTB.TabIndex = 5;
             // 
             // progressBar1
@@ -181,7 +181,7 @@
             series1.Color = System.Drawing.Color.Blue;
             series1.Name = "Series1";
             this.testChart.Series.Add(series1);
-            this.testChart.Size = new System.Drawing.Size(70, 228);
+            this.testChart.Size = new System.Drawing.Size(59, 228);
             this.testChart.TabIndex = 6;
             this.testChart.Text = "chart1";
             // 

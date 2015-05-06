@@ -8,12 +8,12 @@ namespace SubtitleCreator
 {
     class Frame
     {
-        private uint id;
+        private int id;//uint
         private double rms;
         private double entropy;
         private double[] mfcc;
 
-        public Frame(uint id)
+        public Frame(int id)
         {
             this.id = id;
             this.rms = 0;
@@ -21,20 +21,7 @@ namespace SubtitleCreator
             this.mfcc = null;
         }
 
-        //тип имя
-        //{
-        //    get
-        //    {
-        //        // код аксессора для чтения из поля
-        //    }
-
-        //    set
-        //    {
-        //        // код аксессора для записи в поле
-        //    }
-        //}
-
-        public uint GetId
+        public int GetId
         {
             get { return this.id; }
         }
@@ -60,11 +47,11 @@ namespace SubtitleCreator
             this.entropy = Basic.Entropy(sourceNormalized, start, finish, Constants.entropyBins, -1, 1);
         }
 
-        public double[] InitMFCC(double[] source, uint start, uint finish, uint freq)//short freq
+        //public double[] InitMFCC(double[] source, uint start, uint finish, uint freq)//short freq
+        public void InitMFCC(double[] source, uint start, uint finish, uint freq)//short freq
         {
-
             this.mfcc = MFCC.Transform(source, start, finish, Constants.mfccSize, freq, Constants.mfccFreqMin, Constants.mfccFreqMax);
-            return this.mfcc;
+            //return this.mfcc;
         }
 
     }

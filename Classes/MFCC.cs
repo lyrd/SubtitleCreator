@@ -209,6 +209,7 @@ namespace SubtitleCreator
             return filterBanks;
         }
 
+        //Вычисление энергии фрейма
         private static double[] CalcPower(double[] fourierRaw, uint fourierLength, double[,] melFilters, byte mfccCount)
         {
 
@@ -231,6 +232,7 @@ namespace SubtitleCreator
             return logPower;
         }
 
+        //Дискретное косинусное преобразование
         private static double[] DctTransform(double[] data, uint length)
         {
 

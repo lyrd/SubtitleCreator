@@ -42,11 +42,7 @@ namespace SubtitleCreator
             set { rawData = value; }
         }
 
-        //public static uint sampleNumber;
-        //public static double[] nornalizeData;
-        //public static short[] rawData;
-
-        public static object[] ReadWavDataChunk(string _outputAudioFile)//short
+        public static void ReadWavDataChunk(string _outputAudioFile)
         {
             using (WaveFileReader reader = new WaveFileReader(_outputAudioFile))
             {
@@ -57,10 +53,11 @@ namespace SubtitleCreator
                     short[] sampleBuffer = new short[read / 2];
                     Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
 
-                    uint _sampleNumber = (uint)sampleBuffer.Length;
+                    sampleNumber = (uint)sampleBuffer.Length;
 
-                    object[] ret = { _sampleNumber, sampleBuffer };
-                    return ret;
+                    rawData = sampleBuffer;
+
+                    Normalization(rawData);
                 }
                 else
                 {
@@ -70,21 +67,20 @@ namespace SubtitleCreator
 
         }
 
-        public static double[] Normalization(short[] _rawData)//float
+        private static void Normalization(short[] _rawData)
         {
-            uint _sampleNumber = (uint)_rawData.Length;
-            double[] _nornalizeData = new double[_sampleNumber];
+            double[] _nornalizeData = new double[sampleNumber];
 
             double minData = (double)Math.Abs((double)_rawData.Min());
             double maxData = (double)Math.Abs((double)_rawData.Max());
             double max = Math.Max(minData, maxData);
 
-            for (uint i = 0; i < _sampleNumber; i++)
+            for (uint i = 0; i < sampleNumber; i++)
             {
                 _nornalizeData[i] = _rawData[i] / max;
             }
 
-            return _nornalizeData;
+            nornalizeData = _nornalizeData;
         }
     }
 }
