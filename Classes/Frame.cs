@@ -13,12 +13,18 @@ namespace SubtitleCreator
         private double entropy;
         private double[] mfcc;
 
-        public Frame(int id)
+        private uint start;
+        private uint end;
+
+        public Frame(int id, uint start, uint end)
         {
             this.id = id;
             this.rms = 0;
             this.entropy = 0;
             this.mfcc = null;
+
+            this.start = start;
+            this.end = end;
         }
 
         public int GetId
@@ -39,6 +45,18 @@ namespace SubtitleCreator
         public double[] GetMfcc
         {
             get { return this.mfcc; }
+        }
+
+        public uint GetStart
+        {
+            get { return this.start; }
+            set { this.start = value; }
+        }
+
+        public uint GetEnd
+        {
+            get { return this.end; }
+            set { this.end = value; }
         }
 
         public void Init(short[] source, double[] sourceNormalized, uint start, uint finish)

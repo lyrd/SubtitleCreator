@@ -1,12 +1,19 @@
-п»їusing System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+//using System.Data;
+//using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+//using System.Runtime.InteropServices;
+//using System.Text;
+//using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+//using System.Collections;
+//using NAudio.Wave;
 using OperationWithFiles;
+using System.Numerics;
 
 namespace SubtitleCreator
 {
@@ -19,15 +26,15 @@ namespace SubtitleCreator
 
         /*
          * TODO:
-         * block form while cmd                      вЂ   
-         * С„РёР»СЊС‚СЂ                                    вЂ    
+         * block form while cmd                      †  
+         * фильтр                                    †   
          *progressBar1.Width = this.Width - 40;
          *progressBar1.Top = this.Height - 73;
-         *РІРѕР·РІСЂР°С‰РµРЅРёРµ С„РѕРєСѓСЃР°                         вЂ 
-         *РєРѕР»-РІРѕ С„РёР»СЊС‚РѕРІ (stndrt/ extended)          вЂ 
-         *toolStrip                                  вЂ 
-         *РЅРѕСЂРјРёСЂРѕРІРєР°
-         *С„РёР»СЊС‚СЂС‹ СЃРѕС…СЂ. РІ С„Р°Р№Р»Рµ                      вЂ 
+         *возвращение фокуса                         †
+         *кол-во фильтов (stndrt/ extended)          †
+         *toolStrip                                  †
+         *нормировка
+         *фильтры сохр. в файле                      †
          *exceptions
          *switch
          *class
@@ -37,14 +44,14 @@ namespace SubtitleCreator
          * ffmpeg keys
          * ffmpeg -i source_video.avi -vn -ar 44100 -ac 2 -ab 192k -f mp3 sound.mp3
          * --------------------------------------------------------------------------------------------------------------------------------
-         * РљР»СЋС‡ 	      |  РџСЂРёРјРµСЂ      |	РћРїРёСЃР°РЅРёРµ 
+         * Ключ 	      |  Пример      |	Описание 
          * --------------------------------------------------------------------------------------------------------------------------------
-         * -i <filename>  |	-i movie.avi |	РџСѓС‚СЊ/РёРјСЏ РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°. Р‘РµР· СѓСЃС‚Р°РЅРѕРІРєРё РїР°СЂР°РјРµС‚СЂРѕРІ РѕР±СЂР°Р±РѕС‚РєРё РѕР·РЅР°С‡Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РІС…РѕРґРЅРѕРј С„Р°Р№Р»Рµ 
-         * -vn 	          | -vn 	     |  РќРµ РєРѕРґРёСЂРѕРІР°С‚СЊ РІРёРґРµРѕ 
-         * -ar <freq> 	  | -ar 48000    |  Р§Р°СЃС‚РѕС‚Р° РґРёСЃРєСЂРµРґРёС‚Р°С†РёРё. РџРѕ СѓРјРѕС‡Р°РЅРёСЋ 44100Hz 
-         * -ac <channels> | -aСЃ 6        |  РљРѕР»РёС‡РµСЃС‚РІРѕ РєР°РЅР°Р»РѕРІ. РџРѕ СѓРјРѕС‡Р°РЅРёСЋ 2
-         * -ab <bitrate>  | -ab 256k 	 |  Р‘РёС‚СЂРµР№С‚ Р°СѓРґРёРѕ. РџРѕ СѓРјРѕС‡Р°РЅРёСЋ 64kbit/s 
-         * -f <format> 	  | -f mkv       |	Р¤РѕСЂРјР°С‚ РІС…РѕРґРЅРѕРіРѕ/РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р° 
+         * -i <filename>  |	-i movie.avi |	Путь/имя входного файла. Без установки параметров обработки означает информацию о входном файле 
+         * -vn 	          | -vn 	     |  Не кодировать видео 
+         * -ar <freq> 	  | -ar 48000    |  Частота дискредитации. По умочанию 44100Hz 
+         * -ac <channels> | -aс 6        |  Количество каналов. По умочанию 2
+         * -ab <bitrate>  | -ab 256k 	 |  Битрейт аудио. По умочанию 64kbit/s 
+         * -f <format> 	  | -f mkv       |	Формат входного/выходного файла 
          */
 
         private string inputVideoFile = "";
@@ -66,7 +73,7 @@ namespace SubtitleCreator
         {
             Dictionary<string, string> letters = new Dictionary<string, string>();
 
-            string[,] setOfLetters ={ { "Р°", "Р±", "РІ", "Рі", "Рґ", "Рµ", "С‘", "Р¶", "Р·", "Рё", "Р№", "Рє", "Р»", "Рј", "РЅ", "Рѕ", "Рї", "СЂ", "СЃ", "С‚", "Сѓ", "С„", "С…", "С†", "С‡", "С€", "С‰", "СЉ", "С‹", "СЊ", "СЌ", "СЋ", "СЏ", "Рђ", "Р‘", "Р’", "Р“", "Р”", "Р•", "РЃ", "Р–", "Р—", "Р", "Р™", "Рљ", "Р›", "Рњ", "Рќ", "Рћ", "Рџ", "Р ", "РЎ", "Рў", "РЈ", "Р¤", "РҐ", "Р¦", "Р§", "РЁ", "Р©", "РЄ", "Р«", "Р¬", "Р­", "Р®", "РЇ" },
+            string[,] setOfLetters ={ { "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я" },
                                     { "a", "b", "v", "g", "d", "e", "yo", "zh", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "c", "ch", "sh", "sch", "j", "i", "j", "e", "yu", "ya", "A", "B", "V", "G", "D", "E", "Yo", "Zh", "Z", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "C", "Ch", "Sh", "Sch", "J", "I", "J", "E", "Yu", "Ya" }};
 
             for (byte i = 0; i < setOfLetters.GetLength(1); i++)
@@ -95,14 +102,14 @@ namespace SubtitleCreator
         private void TEST_ReadData()
         {
             testChart.Series[0].Points.Clear();
-
+        
             try
             {
-                WavData.ReadWavDataChunk("female1\\2.wav");//female1\\2.wav
+                WavData.ReadWavDataChunk("female1.wav");//female1\\2.wav
             }
             catch (WavException ex)
             {
-                MessageBox.Show(String.Format(ex.Message), "РћС€РёР±РєР°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             TEST_WavVisualization();
@@ -163,16 +170,11 @@ namespace SubtitleCreator
             }
             else
             {
-                //testChart.ChartAreas[0].AxisX.Minimum = coords_raw[0];
-                //testChart.ChartAreas[0].AxisX.Maximum = coords_raw[1];
+                testChart.ChartAreas[0].AxisX.Minimum = coords_raw[0];
+                testChart.ChartAreas[0].AxisX.Maximum = coords_raw[1];
 
-                //testChart.ChartAreas[0].AxisY.Minimum = coords_raw[2];
-                //testChart.ChartAreas[0].AxisY.Maximum = coords_raw[3];
-                testChart.ChartAreas[0].AxisX.Minimum = 0;
-                testChart.ChartAreas[0].AxisX.Maximum = 450;
-
-                testChart.ChartAreas[0].AxisY.Minimum = -4000;
-                testChart.ChartAreas[0].AxisY.Maximum = 4000;
+                testChart.ChartAreas[0].AxisY.Minimum = coords_raw[2];
+                testChart.ChartAreas[0].AxisY.Maximum = coords_raw[3];
 
                 for (int i = start; i < finish; i++)
                     testChart.Series[0].Points.AddXY(i, WavData.RawData[i]);
@@ -190,149 +192,144 @@ namespace SubtitleCreator
             }
         }
 
-        private static void TEST_SaveIntoFile<T>(List<T> mas, string name)
-        {
-            using (StreamWriter str = new StreamWriter(name + ".txt"))
-            {
-                for (int i = 0; i < mas.Count; i++)
-                {
-                    str.WriteLine(mas[i]);
-                }
-            }
-        }
+        //private object[] ReadWavDataChunk(string _outputAudioFile)//short
+        //{
+        //    try
+        //    {
+        //        using (WaveFileReader reader = new WaveFileReader(_outputAudioFile))
+        //        {
+        //            if (reader.WaveFormat.BitsPerSample == 16)
+        //            {
+        //                byte[] buffer = new byte[reader.Length];
+        //                int read = reader.Read(buffer, 0, buffer.Length);
+        //                short[] sampleBuffer = new short[read / 2];
+        //                Buffer.BlockCopy(buffer, 0, sampleBuffer, 0, read);
+
+        //                uint _sampleNumber = (uint)sampleBuffer.Length;
+
+        //                object[] ret = { _sampleNumber, sampleBuffer };
+        //                return ret;
+        //            }
+        //            else
+        //            {
+        //                object[] temp = { null, null };
+        //                MessageBox.Show("Only works with 16 bit audio");
+        //                return temp;
+        //            }
+        //        }
+        //    }
+        //    catch (FileNotFoundException ex)
+        //    {
+        //        MessageBox.Show(String.Format("Звуковая дорожка не была извлечена\n{0}", ex.Message),
+        //                        "Ошибка",
+        //                        MessageBoxButtons.OK,
+        //                        MessageBoxIcon.Error);
+
+        //        object[] temp = { null, null };
+        //        return temp;
+        //    }
+        //}
+
+        //private static double[] Normalization(short[] _rawData)//float
+        //{
+        //    uint _sampleNumber = (uint)_rawData.Length;
+        //    double[] _nornalizeData = new double[_sampleNumber];
+
+        //    double minData = (double)Math.Abs((double)_rawData.Min());
+        //    double maxData = (double)Math.Abs((double)_rawData.Max());
+        //    double max = Math.Max(minData, maxData);
+
+        //    for (uint i = 0; i < _sampleNumber; i++)
+        //    {
+        //        _nornalizeData[i] = _rawData[i] / max;
+        //    }
+
+        //    return _nornalizeData;
+        //}
+
         #endregion
 
         private void btnTest_Click(object sender, EventArgs e)
         {
+            //forTests
+            //Complex comp = new Complex(1, 5);
+            //MessageBox.Show(String.Format(new ComplexFormatter(), "Imaginary = {0}\nMagnitude = {1}\nPhase = {2}\nReal = {3}\nSquaredMagnitude = {4}",
+            //    comp.Imaginary, comp.Magnitude, comp.Phase, comp.Real, Math.Pow(comp.Magnitude, 2)));
+
+            ////comp = Complex.FromPolarCoordinates(comp.Magnitude, comp.Phase);
+            //Complex comp2 = Complex.FromPolarCoordinates(comp.Magnitude, comp.Phase);
+            //MessageBox.Show(String.Format("Polar = {0}", comp2));
+            ////decimal a = 25.0m / 46.0m;
+            ////decimal b = (1.0m - a);// / 2.0m;
+            ////MessageBox.Show(String.Format("{0}\n{1}", a, b));
+            ////MessageBox.Show(String.Format("{0}\n{1}", Constants.alpha, Constants.beta));
+
+            //Complex[] test = MFCC.Test();
+            //MessageBox.Show(test.Count().ToString());
+
+            //MessageBox.Show(Constants.wordMinSize.ToString());
+
             TEST_ReadData();
+
+            //testTB.Text += "Sample Number: " + WavData.SampleNumber + "\r\n";
+            //testTB.Text += "Frame Lenght: " + Constants.frameLenght + "\r\n";
+            //testTB.Text += "Frame Overlap: " + Constants.frameLenght * Constants.frameOverlap + "\r\n";
 
             uint start = 0;
             uint finish = start + Constants.frameLenght;
-            uint shift = (uint)(Constants.frameLenght * Constants.frameOverlap);
+            uint shift = (uint)(Constants.frameLenght * Constants.frameOverlap); 
             List<Frame> frames = new List<Frame>();
 
-            uint totalAmountOfFullFrames = (uint)Math.Floor((double)WavData.SampleNumber / 128);
-            List<double> entTest = new List<double>();
+            uint totalAmountOfFullFrames = WavData.SampleNumber / 128;           
+            uint samplesInFullFrame = totalAmountOfFullFrames * 128;
+            uint sizeOfSmallFrame = WavData.SampleNumber - samplesInFullFrame;
+            //testTB.Text += "Total Amount OF Full Frames: " + totalAmountOfFullFrames + "\r\n";
+            //testTB.Text += "Total Amount OF All Frames: " + (totalAmountOfFullFrames + 1) + "\r\n";
+            //testTB.Text += "Samples In Full Frame: " + samplesInFullFrame + "\r\n";
+            //testTB.Text += "Small Frame: " + sizeOfSmallFrame + "\r\n";
 
-            Stopwatch sw = Stopwatch.StartNew();
+            //testTB.Text += "Shift: " + shift + "\r\n";
+            ////testTB.Text += String.Format("1\t{0}\t{1}\t{2}\r\n", start, finish, (finish - start));
 
             for (int i = 0; i < totalAmountOfFullFrames; i++)
             {
-                if (i < totalAmountOfFullFrames - 1)//1
+                if(i < totalAmountOfFullFrames - 2)//1
                 {
                     frames.Add(new Frame(i, start, finish));
+                    //testTB.Text += String.Format("{0}\t{1}\t{2}\t{3}\r\n", i + 1, frames[i].GetStart, frames[i].GetEnd, (frames[i].GetEnd - frames[i].GetStart));
+
+                    frames[i].Init(WavData.RawData, WavData.NornalizeData, frames[i].GetStart, frames[i].GetEnd);
+                    frames[i].InitMFCC(WavData.NornalizeData, frames[i].GetStart, frames[i].GetEnd, Constants.sampleRate);
+
                     start += shift;
                     finish = start + Constants.frameLenght;
+
+                    //TEST_SaveIntoFile(frames[i].GetMfcc, "test\\testMFCC_id" + frames[i].GetId + "_lenght_" + (finish - start));
+                }
+                else 
+                {
+                    start += shift;
+                    finish = WavData.SampleNumber - 1;
+
+                    frames.Add(new Frame(i, start, finish));
+                    //testTB.Text += String.Format("{0}\t{1}\t{2}\t{3}\r\n", i + 1, frames[i].GetStart, frames[i].GetEnd, (frames[i].GetEnd - frames[i].GetStart));
+
+                    frames[i].Init(WavData.RawData, WavData.NornalizeData, start, finish);
+                    frames[i].InitMFCC(WavData.NornalizeData, start, finish, Constants.sampleRate);
+
+                    //TEST_SaveIntoFile(frames[i].GetMfcc, "test\\testMFCC_id" + frames[i].GetId + "_lenght_" + (finish - start));
                 }
             }
 
-            for (int i = 0; i < totalAmountOfFullFrames - 2; i++)//0
-            //Parallel.For(0, totalAmountOfFullFrames, i =>//(int)
+            for (int i = 0; i < totalAmountOfFullFrames -1; i++)//1
             {
-                //if (i < totalAmountOfFullFrames - 1)//1 2forP
-                //{
-                //frames.Add(new Frame(i, start, finish));
-                //testTB.Text += String.Format("{0}\t{1}\t{2}\t{3}\r\n", i + 1, frames[i].GetStart, frames[i].GetEnd, (frames[i].GetEnd - frames[i].GetStart));
-
-                frames[i].Init(WavData.RawData, WavData.NornalizeData, frames[i].GetStart, frames[i].GetEnd);
-                entTest.Add(frames[i].GetEntropy);
-                //frames[i].InitMFCC(WavData.NornalizeData, frames[i].GetStart, frames[i].GetEnd, Constants.sampleRate);
-
-                //start += shift;
-                //finish = start + Constants.frameLenght;
-
-                //TEST_SaveIntoFile(frames[i].GetMfcc, "test\\testMFCC_id" + frames[i].GetId + "_lenght_" + (finish - start));
-                //}
-                //else
-                //{
-                //    start += shift;
-                //    finish = WavData.SampleNumber - 1;
-
-                //    //frames.Add(new Frame(i, start, finish));
-                //    //testTB.Text += String.Format("{0}\t{1}\t{2}\t{3}\r\n", i + 1, frames[i].GetStart, frames[i].GetEnd, (frames[i].GetEnd - frames[i].GetStart));
-
-                //    frames[i].Init(WavData.RawData, WavData.NornalizeData, start, finish);
-                //    frames[i].InitMFCC(WavData.NornalizeData, start, finish, Constants.sampleRate);
-
-                //    //TEST_SaveIntoFile(frames[i].GetMfcc, "test\\testMFCC_id" + frames[i].GetId + "_lenght_" + (finish - start));
-                //}
-            }//);
-
-            //TEST_SaveIntoFile(entTest, "test\\entropy.txt");
-
-            //testChart.ChartAreas[0].AxisX.Minimum = 0;
-            //for (int i = 0; i < totalAmountOfFullFrames - 2; i++)//1
-            //{
-            //    //testTB.Text += frames[i].GetEntropy + "\r\n";
-            //    //chart1.Series[0].Points.AddXY(i, frames[i].GetEntropy);
-            //    testChart.Series[0].Points.AddXY(i, frames[i].GetEntropy);
-            //}
-
-            //testChart.Series[1].Points.AddXY(0, Constants.entropyThreshold);
-            //testChart.Series[1].Points.AddXY(totalAmountOfFullFrames - 1, Constants.entropyThreshold);
-            //MessageBox.Show(sw.ElapsedMilliseconds.ToString());
-
-            List<Frame> combinedFrames = new List<Frame>();
-
-            List<bool> IsSound = new List<bool>();
-
-            for (int i = 0; i < totalAmountOfFullFrames - 2; i++)
-            {
-                if (frames[i].GetEntropy > Constants.entropyThreshold)
-                {
-                    IsSound.Add(true);
-                }
-                else
-                {
-                    IsSound.Add(false);
-                }
+                //testTB.Text += frames[i].GetEntropy + "\r\n";
+                chart1.Series[0].Points.AddXY(i, frames[i].GetEntropy);
             }
 
-            for (int i = 0; i < IsSound.Count; i++)
-            {
-                testTB.Text += (i + 0).ToString() + "\t" + IsSound[i] + "\t" + frames[i].GetEntropy + "\t" + frames[i].GetStart + "\t" + frames[i].GetEnd + "\r\n";
-            }
+            chart1.Series[1].Points.AddXY(0, Constants.entropyThreshold);
+            chart1.Series[1].Points.AddXY(totalAmountOfFullFrames - 1, Constants.entropyThreshold);
 
-            uint startIndex = 0;
-            uint endIndex = 0;
-            bool startIndexIsSet = false;
-
-
-            for (int i = 0; i < totalAmountOfFullFrames - 3; i++)
-            {
-                if (!startIndexIsSet)
-                {
-                    startIndex = frames[i].GetStart;
-                    startIndexIsSet = true;
-                }
-
-                if (IsSound[i] == IsSound[i + 1])
-                {
-                    endIndex = frames[i + 1].GetEnd;
-                }
-                else
-                {
-                    endIndex = frames[i].GetEnd;
-                    combinedFrames.Add(new Frame(i, startIndex, endIndex));
-                    startIndexIsSet = false;
-                }
-
-                //combinedFrames.Add(new Frame(i, startIndex, endIndex));
-                //startIndexIsSet = false;
-            }
-
-            //for (uint i = combinedFrames[0].GetStart; i < combinedFrames[combinedFrames.Count].GetEnd; i++)
-            //{
-            //    chart1.Series[0].Points.AddXY(i, WavData.NornalizeData[i]);
-            //}
-
-            for (uint i = combinedFrames[0].GetStart; i < combinedFrames[0].GetEnd; i++)
-            {
-                chart1.Series[0].Points.AddXY(i, WavData.RawData[i]);
-            }
-
-            MessageBox.Show(combinedFrames.Count.ToString());
-            MessageBox.Show(combinedFrames[0].GetStart + "\r\n" + combinedFrames[0].GetEnd + "\r\n" + combinedFrames[1].GetStart + "\r\n" + combinedFrames[1].GetEnd);
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -359,7 +356,7 @@ namespace SubtitleCreator
                 catch (Win32Exception ex)
                 {
                     MessageBox.Show(String.Format("ffmpeg.exe\n{0}", ex.Message),
-                                    "РћС€РёР±РєР°",
+                                    "Ошибка",
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Error);
                     timerStatusChecker.Stop();
@@ -377,13 +374,28 @@ namespace SubtitleCreator
 
             if (!this.Focused && status == Status.idle)
             {
+                //object[] tempObj = new object[2];
+
+                //WavData.ReadWavDataChunk("female1.wav").CopyTo(tempObj, 0);
+
+                //try
+                //{
+                //    WavData.SampleNumber = (uint)tempObj[0];
+                //    WavData.RawData = new short[WavData.SampleNumber];
+                //    WavData.RawData = (short[])tempObj[1];
+
+                //    WavData.NornalizeData = new double[WavData.SampleNumber];
+                //    WavData.Normalization(WavData.RawData).CopyTo(WavData.NornalizeData, 0);
+                //}
+                //catch (WavException ex) { MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
                 try
                 {
                     WavData.ReadWavDataChunk(outputAudioFile);
                 }
                 catch (WavException ex)
                 {
-                    MessageBox.Show(String.Format(ex.Message), "РћС€РёР±РєР°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 this.Activate();
@@ -414,13 +426,13 @@ namespace SubtitleCreator
 
             chart1.ChartAreas[0].AxisX.Minimum = 0;
 
-            //testChart.ChartAreas[0].AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
-            //chart1.ChartAreas[0].AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            testChart.ChartAreas[0].AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            chart1.ChartAreas[0].AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
 
-            //chart1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-            //chart1.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
-            //testChart.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-            //testChart.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            chart1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            chart1.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            testChart.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            testChart.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
 
             #endregion
         }

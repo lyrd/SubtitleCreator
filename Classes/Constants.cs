@@ -49,7 +49,7 @@ namespace SubtitleCreator
         //Количество значений
         public static readonly byte entropyBins = 75;
         //Порог энтропии
-        public static readonly double entropyThreshold = 0.1;
+        public static readonly double entropyThreshold = 0.1;//0.1
 
         public static readonly uint sampleRate = 44100;
 

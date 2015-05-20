@@ -27,14 +27,15 @@ namespace SubtitleCreator
         public static double Entropy(double[] source, uint start, uint finish, uint binsCount, double minRaw, double maxRaw)
         {
             double entropy = 0;
-
             double binSize = Math.Abs(maxRaw - minRaw) / (binsCount);
+
             if (Math.Abs(binSize) < Constants.Epsilon())
             {
                 return 0;
             }
 
             double[] p = new double[binsCount];
+
             for (uint i = 0; i < binsCount; i++)
             {
                 p[i] = 0d;//0.
@@ -42,6 +43,7 @@ namespace SubtitleCreator
 
             //Расчет вероятностей
             uint index;
+
             for (uint i = start; i <= finish; i++)
             {
                 double value = source[i];
@@ -57,6 +59,7 @@ namespace SubtitleCreator
 
             //Нормализация вероятностей
             uint size = finish - start + 1;
+
             for (uint i = 0; i < binsCount; i++)
             {
                 p[i] /= size;
