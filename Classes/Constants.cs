@@ -25,7 +25,7 @@ namespace SubtitleCreator
         public static readonly double beta = (1d - alpha); //or 0.46 or 0.46164  //public static readonly decimal betta = (1m - alpha) / 2m;
 
         //Длина фрейма (миллисекунды)
-        public static readonly ushort frameLenght = 256;//50 byte
+        public static readonly ushort frameLenght = 256;//50 byte 256
 
         //Процент наложения фреймов (0 <= x < 1)
         public static readonly float frameOverlap = 0.5F;

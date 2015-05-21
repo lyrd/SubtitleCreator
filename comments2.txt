@@ -1,4 +1,4 @@
-п»їusing System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -20,15 +20,15 @@ namespace SubtitleCreator
 
         /*
          * TODO:
-         * block form while cmd                      вЂ   
-         * С„РёР»СЊС‚СЂ                                    вЂ    
+         * block form while cmd                      †  
+         * фильтр                                    †   
          *progressBar1.Width = this.Width - 40;
          *progressBar1.Top = this.Height - 73;
-         *РІРѕР·РІСЂР°С‰РµРЅРёРµ С„РѕРєСѓСЃР°                         вЂ 
-         *РєРѕР»-РІРѕ С„РёР»СЊС‚РѕРІ (stndrt/ extended)          вЂ 
-         *toolStrip                                  вЂ 
-         *РЅРѕСЂРјРёСЂРѕРІРєР°
-         *С„РёР»СЊС‚СЂС‹ СЃРѕС…СЂ. РІ С„Р°Р№Р»Рµ                      вЂ 
+         *возвращение фокуса                         †
+         *кол-во фильтов (stndrt/ extended)          †
+         *toolStrip                                  †
+         *нормировка
+         *фильтры сохр. в файле                      †
          *exceptions
          *switch
          *class
@@ -38,14 +38,14 @@ namespace SubtitleCreator
          * ffmpeg keys
          * ffmpeg -i source_video.avi -vn -ar 44100 -ac 2 -ab 192k -f mp3 sound.mp3
          * --------------------------------------------------------------------------------------------------------------------------------
-         * РљР»СЋС‡ 	      |  РџСЂРёРјРµСЂ      |	РћРїРёСЃР°РЅРёРµ 
+         * Ключ 	      |  Пример      |	Описание 
          * --------------------------------------------------------------------------------------------------------------------------------
-         * -i <filename>  |	-i movie.avi |	РџСѓС‚СЊ/РёРјСЏ РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°. Р‘РµР· СѓСЃС‚Р°РЅРѕРІРєРё РїР°СЂР°РјРµС‚СЂРѕРІ РѕР±СЂР°Р±РѕС‚РєРё РѕР·РЅР°С‡Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РІС…РѕРґРЅРѕРј С„Р°Р№Р»Рµ 
-         * -vn 	          | -vn 	     |  РќРµ РєРѕРґРёСЂРѕРІР°С‚СЊ РІРёРґРµРѕ 
-         * -ar <freq> 	  | -ar 48000    |  Р§Р°СЃС‚РѕС‚Р° РґРёСЃРєСЂРµРґРёС‚Р°С†РёРё. РџРѕ СѓРјРѕС‡Р°РЅРёСЋ 44100Hz 
-         * -ac <channels> | -aСЃ 6        |  РљРѕР»РёС‡РµСЃС‚РІРѕ РєР°РЅР°Р»РѕРІ. РџРѕ СѓРјРѕС‡Р°РЅРёСЋ 2
-         * -ab <bitrate>  | -ab 256k 	 |  Р‘РёС‚СЂРµР№С‚ Р°СѓРґРёРѕ. РџРѕ СѓРјРѕС‡Р°РЅРёСЋ 64kbit/s 
-         * -f <format> 	  | -f mkv       |	Р¤РѕСЂРјР°С‚ РІС…РѕРґРЅРѕРіРѕ/РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р° 
+         * -i <filename>  |	-i movie.avi |	Путь/имя входного файла. Без установки параметров обработки означает информацию о входном файле 
+         * -vn 	          | -vn 	     |  Не кодировать видео 
+         * -ar <freq> 	  | -ar 48000    |  Частота дискредитации. По умочанию 44100Hz 
+         * -ac <channels> | -aс 6        |  Количество каналов. По умочанию 2
+         * -ab <bitrate>  | -ab 256k 	 |  Битрейт аудио. По умочанию 64kbit/s 
+         * -f <format> 	  | -f mkv       |	Формат входного/выходного файла 
          */
 
         private string inputVideoFile = "";
@@ -67,7 +67,7 @@ namespace SubtitleCreator
         {
             Dictionary<string, string> letters = new Dictionary<string, string>();
 
-            string[,] setOfLetters ={ { "Р°", "Р±", "РІ", "Рі", "Рґ", "Рµ", "С‘", "Р¶", "Р·", "Рё", "Р№", "Рє", "Р»", "Рј", "РЅ", "Рѕ", "Рї", "СЂ", "СЃ", "С‚", "Сѓ", "С„", "С…", "С†", "С‡", "С€", "С‰", "СЉ", "С‹", "СЊ", "СЌ", "СЋ", "СЏ", "Рђ", "Р‘", "Р’", "Р“", "Р”", "Р•", "РЃ", "Р–", "Р—", "Р", "Р™", "Рљ", "Р›", "Рњ", "Рќ", "Рћ", "Рџ", "Р ", "РЎ", "Рў", "РЈ", "Р¤", "РҐ", "Р¦", "Р§", "РЁ", "Р©", "РЄ", "Р«", "Р¬", "Р­", "Р®", "РЇ" },
+            string[,] setOfLetters ={ { "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я" },
                                     { "a", "b", "v", "g", "d", "e", "yo", "zh", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "c", "ch", "sh", "sch", "j", "i", "j", "e", "yu", "ya", "A", "B", "V", "G", "D", "E", "Yo", "Zh", "Z", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "C", "Ch", "Sh", "Sch", "J", "I", "J", "E", "Yu", "Ya" }};
 
             for (byte i = 0; i < setOfLetters.GetLength(1); i++)
@@ -99,11 +99,11 @@ namespace SubtitleCreator
 
             try
             {
-                WavData.ReadWavDataChunk("female1\\3.wav");//female1\\2.wav
+                WavData.ReadWavDataChunk("female1.wav");//female1\\2.wav
             }
             catch (WavException ex)
             {
-                MessageBox.Show(String.Format(ex.Message), "РћС€РёР±РєР°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             TEST_WavVisualization();
@@ -142,7 +142,7 @@ namespace SubtitleCreator
             }
         }
 
-        private void TEST_WavVisualization(int start, int finish)
+        private void TEST_WavVisualization(short start, short finish)
         {
             short min = WavData.RawData.Min();
             short max = WavData.RawData.Max();
@@ -164,19 +164,19 @@ namespace SubtitleCreator
             }
             else
             {
-                chart1.ChartAreas[0].AxisX.Minimum = coords_raw[0];
-                chart1.ChartAreas[0].AxisX.Maximum = coords_raw[1];
+                //testChart.ChartAreas[0].AxisX.Minimum = coords_raw[0];
+                //testChart.ChartAreas[0].AxisX.Maximum = coords_raw[1];
 
-                chart1.ChartAreas[0].AxisY.Minimum = coords_raw[2];
-                chart1.ChartAreas[0].AxisY.Maximum = coords_raw[3];
-                //testChart.ChartAreas[0].AxisX.Minimum = 0;
-                //testChart.ChartAreas[0].AxisX.Maximum = 450;
+                //testChart.ChartAreas[0].AxisY.Minimum = coords_raw[2];
+                //testChart.ChartAreas[0].AxisY.Maximum = coords_raw[3];
+                testChart.ChartAreas[0].AxisX.Minimum = 0;
+                testChart.ChartAreas[0].AxisX.Maximum = 450;
 
-                //testChart.ChartAreas[0].AxisY.Minimum = -4000;
-                //testChart.ChartAreas[0].AxisY.Maximum = 4000;
+                testChart.ChartAreas[0].AxisY.Minimum = -4000;
+                testChart.ChartAreas[0].AxisY.Maximum = 4000;
 
                 for (int i = start; i < finish; i++)
-                    chart1.Series[0].Points.AddXY(i, WavData.RawData[i]);
+                    testChart.Series[0].Points.AddXY(i, WavData.RawData[i]);
             }
         }
 
@@ -207,12 +207,123 @@ namespace SubtitleCreator
         {
             TEST_ReadData();
 
-            AudioProcessor.GetFrames();
+            uint start = 0;
+            uint finish = start + Constants.frameLenght;
+            uint shift = (uint)(Constants.frameLenght * Constants.frameOverlap);
+            List<Frame> frames = new List<Frame>();
+            //MessageBox.Show(shift.ToString());
+            uint totalAmountOfFullFrames = (uint)Math.Floor((double)WavData.SampleNumber / 128);
 
-            //for (int i = 0; i < AudioProcessor.Frames.Count; i++)
-            int i = 5;
-                TEST_WavVisualization((int)AudioProcessor.Frames[i].GetStart, (int)AudioProcessor.Frames[i].GetEnd);
-                MessageBox.Show(AudioProcessor.Frames[i].IsSound.ToString());
+            for (int i = 0; i < totalAmountOfFullFrames; i++)
+            {
+                if (i < totalAmountOfFullFrames - 1)//1
+                {
+                    frames.Add(new Frame(i, start, finish));
+                    start += shift;
+                    finish = start + Constants.frameLenght;
+                }
+            }
+
+            for (int i = 0; i < totalAmountOfFullFrames - 2; i++)//0
+            //Parallel.For(0, totalAmountOfFullFrames, i =>//(int)
+            {              
+                frames[i].Init(WavData.RawData, WavData.NornalizeData, frames[i].GetStart, frames[i].GetEnd);               
+            }//);
+
+            List<Frame> combinedFrames = new List<Frame>();
+
+            List<bool> IsSound = new List<bool>();
+
+            for (int i = 0; i < totalAmountOfFullFrames - 2; i++)
+            {
+                if (frames[i].GetEntropy > Constants.entropyThreshold)
+                {
+                    IsSound.Add(true);
+                }
+                else
+                {
+                    IsSound.Add(false);
+                }
+            }
+
+            //for (int i = 0; i < IsSound.Count; i++)
+            //{
+            //    testTB.Text += (i + 0).ToString() + "\t" + IsSound[i] + "\r\n";// + "\t" + frames[i].GetEntropy + "\t" + frames[i].GetStart + "\t" + frames[i].GetEnd + "\r\n";
+            //}
+
+            int count = 0;
+            bool flag = IsSound[0];
+            List<int> pointsOfChangeValues = new List<int>();
+
+            List<Point> borders = new List<Point>();
+
+            pointsOfChangeValues.Add(0);
+
+            for (int i = 0; i < IsSound.Count; i++)
+            {
+
+                if (IsSound[i] == flag)
+                {
+                    count++;
+                }
+                else
+                {
+                    pointsOfChangeValues.Add(count);
+                    flag = !flag;
+                    i--;
+                }
+            }
+
+            pointsOfChangeValues.Add(IsSound.Count - 1);
+
+            //for (int i = 0; i < pointsOfChangeValues.Count; i++)
+            //{
+            //    testTB.Text += pointsOfChangeValues[i] + "\r\n";
+            //}
+
+            for (int i = 0; i < pointsOfChangeValues.Count - 1; i++)
+                borders.Add(new Point(pointsOfChangeValues[i], pointsOfChangeValues[i + 1] - 1));
+
+            //for (int i = 0; i < borders.Count; i++)
+            //{
+            //    testTB.Text += borders[i].X + "\t" + borders[i].Y + "\r\n";
+            //}
+
+            for (int i = 0; i < borders.Count; i++)
+            {
+                combinedFrames.Add(new Frame(i, frames[borders[i].X].GetStart, frames[borders[i].Y].GetEnd));
+            }
+
+            //for (int i = 0; i < combinedFrames.Count; i++)
+            //    for (uint j = combinedFrames[i].GetStart; j < combinedFrames[i].GetEnd; j++)
+            //    {
+            //        chart1.Series[0].Points.AddXY(j, WavData.RawData[j]);
+            //    }
+
+            //for (uint j = combinedFrames[5].GetStart; j < combinedFrames[5].GetEnd; j++)
+            //{
+            //    chart1.Series[0].Points.AddXY(j, WavData.RawData[j]);
+            //}
+
+            for (int i = 0; i < combinedFrames.Count; i++)
+            {
+                combinedFrames[i].Init(WavData.RawData, WavData.NornalizeData, combinedFrames[i].GetStart, combinedFrames[i].GetEnd);
+            }
+            for (int i = 0; i < combinedFrames.Count; i++)
+            {
+                if (combinedFrames[i].GetEntropy > Constants.entropyThreshold)
+                    combinedFrames[i].IsSound = true;
+                else
+                    combinedFrames[i].IsSound = false;
+            }
+
+            for (int i = 0; i < combinedFrames.Count; i++)
+                for (uint j = combinedFrames[i].GetStart; j < combinedFrames[i].GetEnd; j++)
+                {
+                    if (combinedFrames[i].IsSound == true)
+                    chart1.Series[0].Points.AddXY(j, WavData.RawData[j]);
+                }
+            //MessageBox.Show(combinedFrames.Count.ToString());
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -239,7 +350,7 @@ namespace SubtitleCreator
                 catch (Win32Exception ex)
                 {
                     MessageBox.Show(String.Format("ffmpeg.exe\n{0}", ex.Message),
-                                    "РћС€РёР±РєР°",
+                                    "Ошибка",
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Error);
                     timerStatusChecker.Stop();
@@ -263,7 +374,7 @@ namespace SubtitleCreator
                 }
                 catch (WavException ex)
                 {
-                    MessageBox.Show(String.Format(ex.Message), "РћС€РёР±РєР°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 this.Activate();
