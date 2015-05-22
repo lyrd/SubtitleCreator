@@ -18,6 +18,8 @@ namespace SubtitleCreator
 
         private bool isSound;
 
+        private string caption;
+
         public Frame(int id, uint start, uint end)
         {
             this.id = id;
@@ -29,6 +31,8 @@ namespace SubtitleCreator
             this.end = end;
 
             this.isSound = false;
+
+            this.caption = "";
         }
 
         public int GetId
@@ -70,6 +74,12 @@ namespace SubtitleCreator
         {
             get { return this.isSound; }
             set { this.isSound = value; }
+        }
+
+        public string Caption
+        {
+            get { return this.caption; }
+            set { this.caption = value; }
         }
 
         public void Init(short[] source, double[] sourceNormalized, uint start, uint finish)

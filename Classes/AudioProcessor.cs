@@ -113,7 +113,7 @@ namespace SubtitleCreator
                     combinedFrames[i].IsSound = false;
             }
 
-            ClearLists();
+            //ClearLists();
         }
 
     }

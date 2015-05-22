@@ -1,0 +1,100 @@
+            //=================================================================================================
+            double[] one = {102.87924439628,
+18.9967437845749,
+-8.31539443641299,
+9.10741440509637,
+1.54102943596866,
+-6.35494285554927,
+2.02850339623282,
+-2.88594957956848,
+1.20184174702284,
+-0.661949628706233,
+2.634916325507,
+-1.21239577519056 };
+            double[] two = { 84.5647217936344,
+                            20.5062816907434,
+                            -21.9285021043137,
+                            -1.1673774733367,
+                            2.29537113106229,
+                            2.8849510546711,
+                            7.45033987776026,
+                            -2.4361706591776,
+                            0.621853395872672,
+                            3.14637229002995,
+                            -2.79791133596741,
+                            -0.313669848089029
+                            };
+
+
+            List<Frame> frame = new List<Frame>();
+
+            Dictionary<string, double[]> samplesMFCC = new Dictionary<string, double[]>();
+
+            samplesMFCC.Add("ќдин", new double[] {122.57713240288,
+25.9806576797282,
+-5.46809455639049,
+10.582132869263,
+-3.95365439477263,
+4.02857386802241,
+-1.3008323586463,
+4.09646424702198,
+-1.60406006996773,
+1.78026356913057,
+-0.290479473280312,
+0.481294730906596
+});
+
+            samplesMFCC.Add("ƒва", new double[] { 102.138915198788,
+40.800779822216,
+2.50521835307931,
+11.0664661924822,
+-1.89507711945657,
+4.81727708217499,
+-1.47981366490812,
+2.22123916592631,
+-2.8288951393954,
+-0.256760490955532,
+-2.33408327080272,
+-0.320943143709753
+
+
+                            });
+
+            frame.Add(new Frame(0, 0, 2));
+            frame.Add(new Frame(0, 0, 2));
+
+            frame[0].GetMfcc = one;
+            frame[1].GetMfcc = two;
+
+            //testTB.Text += samplesMFCC.ElementAt(0).Key; 
+            //testTB.Text += samplesMFCC.ElementAt(0).Value[0];
+
+            //for (int i = 0; i < frame.Count; i++)
+            //    for (int j = 0; j < samples.Count; j++)
+            //{
+            //    testTB.Text += DTW.CalcDistance(samples[j].GetMfcc, Constants.mfccSize, frame[i].GetMfcc, Constants.mfccSize) + "\r\n";
+            //}
+
+            List<double> temp = new List<double>();
+
+            for (int j = 0; j < frame.Count; j++)
+            {
+                for (int i = 0; i < samplesMFCC.Count; i++)
+                {
+                    //testTB.Text += DTW.CalcDistance(frame[j].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(i).Value, Constants.mfccSize) + "\r\n";
+                    temp.Add(DTW.CalcDistance(frame[j].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(i).Value, Constants.mfccSize));
+                }
+                temp.Min();
+                temp.IndexOf(temp.Min());
+                frame[j].Caption = samplesMFCC.ElementAt(temp.IndexOf(temp.Min())).Key;
+                testTB.Text += samplesMFCC.ElementAt(temp.IndexOf(temp.Min())).Key + "\r\n";
+                temp.Clear();
+            }
+
+            //testTB.Text += Environment.NewLine;
+            //testTB.Text += DTW.CalcDistance(frame[0].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(0).Value, Constants.mfccSize) + "\r\n";
+            //testTB.Text += DTW.CalcDistance(frame[0].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(1).Value, Constants.mfccSize) + "\r\n";
+            //testTB.Text += DTW.CalcDistance(frame[1].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(0).Value, Constants.mfccSize) + "\r\n";
+            //testTB.Text += DTW.CalcDistance(frame[1].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(1).Value, Constants.mfccSize) + "\r\n";
+            //=================================================================================================
+            //MessageBox.Show(frame[0].Caption + "\r\n" + frame[1].Caption);

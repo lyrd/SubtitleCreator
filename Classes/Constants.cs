@@ -44,7 +44,7 @@ namespace SubtitleCreator
 
         ///Диапазон частот
         public static readonly short mfccFreqMin = 300;
-        public static readonly short mfccFreqMax = 8000;//4000
+        public static readonly short mfccFreqMax = 8000;//4000 8000
 
         //Количество значений
         public static readonly byte entropyBins = 75;
