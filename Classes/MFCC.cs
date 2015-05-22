@@ -40,11 +40,11 @@ namespace SubtitleCreator
             double[] dctRaw = DctTransform(logPower, mfccSize);
     
             //TEST
-            Constants.length = sampleLength;
-            Constants.p2length = p2length;
-            Constants.sizemel[0] = melFilters.GetLength(0);
-            Constants.sizemel[1] = melFilters.GetLength(1);
-            Constants.melFiltersWTF = melFilters;
+            //Constants.length = sampleLength;
+            //Constants.p2length = p2length;
+            //Constants.sizemel[0] = melFilters.GetLength(0);
+            //Constants.sizemel[1] = melFilters.GetLength(1);
+            //Constants.melFiltersWTF = melFilters;
             //TEST
 
             return dctRaw;            
@@ -181,7 +181,7 @@ namespace SubtitleCreator
             //    fb[m] = Math.Floor((filterLength + 1) * fb[m] / frequency);
             //}
 
-            Constants.fb = fb;
+            //Constants.fb = fb;
             //TEST
 
             double[,] filterBanks = new double[mfccSize, filterLength];

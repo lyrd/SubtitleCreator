@@ -8,11 +8,11 @@ namespace SubtitleCreator
 {
     static class Constants
     {
-        public static double[,] melFiltersWTF = new double[12, 32];
-        public static double[] sizemel = new double[2];
-        public static double[] fb = new double[14];
-        public static double p2length;
-        public static double length;
+        //public static double[,] melFiltersWTF = new double[12, 32];
+        //public static double[] sizemel = new double[2];
+        //public static double[] fb = new double[14];
+        //public static double p2length;
+        //public static double length;
 
         //Коэффициенты окга Хэмминга
         /// <summary>

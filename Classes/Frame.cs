@@ -49,6 +49,9 @@ namespace SubtitleCreator
         public double[] GetMfcc
         {
             get { return this.mfcc; }
+#if DEBUG
+            set { this.mfcc = value; }
+#endif
         }
 
         public uint GetStart

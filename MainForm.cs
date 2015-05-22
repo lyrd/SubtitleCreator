@@ -99,7 +99,7 @@ namespace SubtitleCreator
 
             try
             {
-                WavData.ReadWavDataChunk("female1\\3.wav");//female1\\2.wav
+                WavData.ReadWavDataChunk("samples\\Russian Numbers 2.wav");//female1\\2.wav female1\\3.wav
             }
             catch (WavException ex)
             {
@@ -186,7 +186,9 @@ namespace SubtitleCreator
             {
                 for (int i = 0; i < mas.Length; i++)
                 {
-                    str.WriteLine(mas[i]);
+                    //str.WriteLine(mas[i]);
+                    str.WriteLine(Convert.ToString(mas[i]).Replace(",", "."));
+                    //str.WriteLine(mas[i].ToString(System.Globalization.CultureInfo.InvariantCulture));
                 }
             }
         }
@@ -205,14 +207,129 @@ namespace SubtitleCreator
 
         private void btnTest_Click(object sender, EventArgs e)
         {
-            TEST_ReadData();
+            //TEST_ReadData();
 
-            AudioProcessor.GetFrames();
+            //AudioProcessor.GetFrames();
 
             //for (int i = 0; i < AudioProcessor.Frames.Count; i++)
-            int i = 5;
-                TEST_WavVisualization((int)AudioProcessor.Frames[i].GetStart, (int)AudioProcessor.Frames[i].GetEnd);
-                MessageBox.Show(AudioProcessor.Frames[i].IsSound.ToString());
+            //{
+            //    AudioProcessor.Frames[i].InitMFCC(WavData.NornalizeData, AudioProcessor.Frames[i].GetStart, AudioProcessor.Frames[i].GetEnd, Constants.sampleRate);
+            //    TEST_SaveIntoFile(AudioProcessor.Frames[i].GetMfcc, "test\\testMFCC_id" + AudioProcessor.Frames[i].GetId + "_lenght_" + (AudioProcessor.Frames[i].GetEnd - AudioProcessor.Frames[i].GetStart));
+            //}
+
+            //MessageBox.Show(AudioProcessor.Frames[5].GetMfcc[0].ToString());
+
+            //chart1.ChartAreas[0].AxisX.Minimum = 0;
+            //chart1.ChartAreas[0].AxisX.Maximum = WavData.SampleNumber;
+            //chart1.ChartAreas[0].AxisY.Minimum = WavData.RawData.Min();
+            //chart1.ChartAreas[0].AxisY.Maximum = WavData.RawData.Max();
+            //int index = 6;
+            //for (uint i = AudioProcessor.Frames[index].GetStart; i < AudioProcessor.Frames[index].GetEnd; i++)
+            //    chart1.Series[0].Points.AddXY(i, WavData.RawData[i]);
+
+            //Frame frameTEST = new Frame(0, 0, WavData.SampleNumber);
+            //frameTEST.InitMFCC(WavData.NornalizeData, frameTEST.GetStart, frameTEST.GetEnd, Constants.sampleRate);
+            //TEST_SaveIntoFile(frameTEST.GetMfcc, "samples\\Russian Numbers 2");
+
+            //=================================================================================================
+            double[] one = {102.87924439628,
+18.9967437845749,
+-8.31539443641299,
+9.10741440509637,
+1.54102943596866,
+-6.35494285554927,
+2.02850339623282,
+-2.88594957956848,
+1.20184174702284,
+-0.661949628706233,
+2.634916325507,
+-1.21239577519056 };
+            double[] two = { 84.5647217936344,
+                            20.5062816907434,
+                            -21.9285021043137,
+                            -1.1673774733367,
+                            2.29537113106229,
+                            2.8849510546711,
+                            7.45033987776026,
+                            -2.4361706591776,
+                            0.621853395872672,
+                            3.14637229002995,
+                            -2.79791133596741,
+                            -0.313669848089029
+                            };
+
+
+            List<Frame> frame = new List<Frame>();
+
+            Dictionary<string, double[]> samplesMFCC = new Dictionary<string, double[]>();
+
+            samplesMFCC.Add("Один", new double[] {122.57713240288,
+25.9806576797282,
+-5.46809455639049,
+10.582132869263,
+-3.95365439477263,
+4.02857386802241,
+-1.3008323586463,
+4.09646424702198,
+-1.60406006996773,
+1.78026356913057,
+-0.290479473280312,
+0.481294730906596
+});
+
+            samplesMFCC.Add("Два", new double[] { 102.138915198788,
+40.800779822216,
+2.50521835307931,
+11.0664661924822,
+-1.89507711945657,
+4.81727708217499,
+-1.47981366490812,
+2.22123916592631,
+-2.8288951393954,
+-0.256760490955532,
+-2.33408327080272,
+-0.320943143709753
+
+
+                            });
+
+            frame.Add(new Frame(0, 0, 2));
+            frame.Add(new Frame(0, 0, 2));
+
+            frame[0].GetMfcc = one;
+            frame[1].GetMfcc = two;
+
+            //testTB.Text += samplesMFCC.ElementAt(0).Key; 
+            //testTB.Text += samplesMFCC.ElementAt(0).Value[0];
+
+            //for (int i = 0; i < frame.Count; i++)
+            //    for (int j = 0; j < samples.Count; j++)
+            //{
+            //    testTB.Text += DTW.CalcDistance(samples[j].GetMfcc, Constants.mfccSize, frame[i].GetMfcc, Constants.mfccSize) + "\r\n";
+            //}
+
+            List<double> temp = new List<double>();
+
+            for (int j = 0; j < frame.Count; j++)
+            {
+                for (int i = 0; i < samplesMFCC.Count; i++)
+                {
+                    //testTB.Text += DTW.CalcDistance(frame[j].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(i).Value, Constants.mfccSize) + "\r\n";
+                    temp.Add(DTW.CalcDistance(frame[j].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(i).Value, Constants.mfccSize));
+                }
+                temp.Min();
+                temp.IndexOf(temp.Min());
+                testTB.Text += samplesMFCC.ElementAt(temp.IndexOf(temp.Min())).Key + "\r\n";
+                temp.Clear();
+            }
+
+            //testTB.Text += Environment.NewLine;
+            //testTB.Text += DTW.CalcDistance(frame[0].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(0).Value, Constants.mfccSize) + "\r\n";
+            //testTB.Text += DTW.CalcDistance(frame[0].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(1).Value, Constants.mfccSize) + "\r\n";
+            //testTB.Text += DTW.CalcDistance(frame[1].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(0).Value, Constants.mfccSize) + "\r\n";
+            //testTB.Text += DTW.CalcDistance(frame[1].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(1).Value, Constants.mfccSize) + "\r\n";
+            //=================================================================================================
+
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
