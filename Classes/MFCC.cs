@@ -24,7 +24,7 @@ namespace SubtitleCreator
     {
 
         //Выполнение преобразования MFCC
-        public static double[] Transform(double[] source, uint start, uint finish, byte mfccSize, uint frequency, short freqMin, short freqMax)//short frequency
+        public static double[] Transform(ref double[] source, uint start, uint finish, byte mfccSize, uint frequency, short freqMin, short freqMax)//short frequency
         {
             uint sampleLength = finish - start + 1;
             //double p2length = Math.Pow(2, Math.Floor(Math.Log(sampleLength, 2)));
@@ -33,7 +33,7 @@ namespace SubtitleCreator
             double[] temp = new double[p2length];
             Array.Copy(source, start, temp, 0, p2length);
 
-            double[] fourierRaw = FourierTransformFast(temp, p2length, true);
+            double[] fourierRaw = FourierTransformFast(ref temp, p2length, true);
             double[,] melFilters = GetMelFilters(mfccSize, p2length, frequency, freqMin, freqMax);
 
             double[] logPower = CalcPower(fourierRaw, p2length, melFilters, mfccSize);
@@ -85,7 +85,7 @@ namespace SubtitleCreator
             return fourierRaw;
         }
 
-        private static double[] FourierTransformFast(double[] source, uint length, bool useWindow)
+        private static double[] FourierTransformFast(ref double[] source, uint length, bool useWindow)
         {
             //Расширить длину исходных данных до степени двойки
             uint p2length = length;

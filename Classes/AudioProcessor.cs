@@ -113,7 +113,21 @@ namespace SubtitleCreator
                     combinedFrames[i].IsSound = false;
             }
 
-            //ClearLists();
+            List<double> temp = new List<double>();
+            for (int j = 0; j < combinedFrames.Count; j++)
+            {
+                for (uint i = combinedFrames[j].GetStart; i < combinedFrames[j].GetEnd; i++)
+                {
+                    temp.Add(WavData.RawData[i]);               
+                }
+
+                if (temp.Max() < 6000 & combinedFrames[j].IsSound == true)
+                    combinedFrames[j].IsSound = false;
+
+                temp.Clear();
+            }
+
+            ClearLists();
         }
 
     }

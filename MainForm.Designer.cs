@@ -176,6 +176,7 @@
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(822, 23);
             this.progressBar1.TabIndex = 3;
+            this.progressBar1.Visible = false;
             // 
             // testChart
             // 
@@ -206,6 +207,7 @@
             this.testCheckBox.TabIndex = 7;
             this.testCheckBox.Text = "isNorm";
             this.testCheckBox.UseVisualStyleBackColor = true;
+            this.testCheckBox.Visible = false;
             // 
             // chart1
             // 
