@@ -221,6 +221,19 @@ namespace SubtitleCreator
                 }
             }
         }
+
+        private static void TEST_SaveIntoFile<T>(T data, string name)
+        {
+            using (StreamWriter str = new StreamWriter(name + ".txt"))
+            {
+                str.WriteLine(data);
+            }
+        }
+
+        private static string Format(double time)
+        {
+            return String.Format("00:00:{0}{1}", (int)time, (time - Math.Truncate(time)).ToString(".000"));//time - Math.Floor(time));//double.Truncate
+        }
         #endregion
 
         private void btnTest_Click(object sender, EventArgs e)
@@ -433,7 +446,7 @@ namespace SubtitleCreator
                     temp.Min();
                     temp.IndexOf(temp.Min());
                     AudioProcessor.Frames[j].Caption = samplesMFCC.ElementAt(temp.IndexOf(temp.Min())).Key;
-                    testTB.Text += samplesMFCC.ElementAt(temp.IndexOf(temp.Min())).Key + "\r\n";
+                    //testTB.Text += samplesMFCC.ElementAt(temp.IndexOf(temp.Min())).Key + "\r\n";
                     temp.Clear();
                 }
             }
@@ -442,11 +455,18 @@ namespace SubtitleCreator
             string str2 = "";
             for (int j = 0; j < AudioProcessor.Frames.Count; j++)
             {
-                str += (j + 1).ToString() + "\t" + AudioProcessor.Frames[j].Caption + "\t" + AudioProcessor.Frames[j].GetStart + "\t" + AudioProcessor.Frames[j].GetEnd + "\r\n";
-                str2 += (j + 1).ToString() + "\t" + AudioProcessor.Frames[j].Caption + "\t" + GetDuration(AudioProcessor.Frames[j].GetStart) + "\t" + GetDuration(AudioProcessor.Frames[j].GetEnd) + "\r\n";
+                //str += (j + 1).ToString() + "\t" + AudioProcessor.Frames[j].Caption + "\t" + AudioProcessor.Frames[j].GetStart + "\t" + AudioProcessor.Frames[j].GetEnd + "\r\n";
+                //str2 += (j + 1).ToString() + "\t" + AudioProcessor.Frames[j].Caption + "\t" + GetDuration(AudioProcessor.Frames[j].GetStart) + "\t" + GetDuration(AudioProcessor.Frames[j].GetEnd) + "\r\n";
+                if(AudioProcessor.Frames[j].IsSound)
+                //str2 += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", AudioProcessor.Frames[j].GetId, GetDuration(AudioProcessor.Frames[j].GetStart),
+                //    GetDuration(AudioProcessor.Frames[j].GetEnd), AudioProcessor.Frames[j].Caption);
+                    str2 += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", AudioProcessor.Frames[j].GetId, Format(GetDuration(AudioProcessor.Frames[j].GetStart)),
+                    Format(GetDuration(AudioProcessor.Frames[j].GetEnd)), AudioProcessor.Frames[j].Caption);
             }
-            MessageBox.Show(str);
-            MessageBox.Show(str2);
+            //MessageBox.Show(str);
+            //MessageBox.Show(str2);
+            testTB.Text += str2;
+            TEST_SaveIntoFile(str2, this.srtFile);
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
