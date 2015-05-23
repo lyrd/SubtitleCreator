@@ -96,7 +96,7 @@ namespace SubtitleCreator
 
         private double GetDuration(uint size)
         {
-            return size / (44100 * 2 * (16 / 2));
+            return size / (44100d * 1d * (16d / 8d));
         }
 
         private void TEST_ReadData()
@@ -251,8 +251,8 @@ namespace SubtitleCreator
 
             Parallel.For(0, AudioProcessor.Frames.Count, (i) =>
             {
-                if(AudioProcessor.Frames[i].IsSound)
-                AudioProcessor.Frames[i].InitMFCC(ref rawdata, AudioProcessor.Frames[i].GetStart, AudioProcessor.Frames[i].GetEnd, Constants.sampleRate);
+                if (AudioProcessor.Frames[i].IsSound)
+                    AudioProcessor.Frames[i].InitMFCC(ref rawdata, AudioProcessor.Frames[i].GetStart, AudioProcessor.Frames[i].GetEnd, Constants.sampleRate);
             });
 
             //MessageBox.Show(AudioProcessor.Frames[5].GetMfcc[0].ToString());
@@ -277,78 +277,78 @@ namespace SubtitleCreator
             //=================================================================================================
             Dictionary<string, double[]> samplesMFCC = new Dictionary<string, double[]>();
             #region One-Five
-//            samplesMFCC.Add("Один", new double[] {102.87924439628,
-//18.9967437845749,
-//-8.31539443641299,
-//9.10741440509637,
-//1.54102943596866,
-//-6.35494285554927,
-//2.02850339623282,
-//-2.88594957956848,
-//1.20184174702284,
-//-0.661949628706233,
-//2.634916325507,
-//-1.21239577519056
-//});
+            //            samplesMFCC.Add("Один", new double[] {102.87924439628,
+            //18.9967437845749,
+            //-8.31539443641299,
+            //9.10741440509637,
+            //1.54102943596866,
+            //-6.35494285554927,
+            //2.02850339623282,
+            //-2.88594957956848,
+            //1.20184174702284,
+            //-0.661949628706233,
+            //2.634916325507,
+            //-1.21239577519056
+            //});
 
-//            samplesMFCC.Add("Два", new double[] { 108.458383278458,
-//23.7530682467297,
-//-4.36526446729434,
-//7.77997941631068,
-//-1.15281695013042,
-//-6.32192546644515,
-//3.41412201405264,
-//1.28586342509823,
-//-0.531651633753943,
-//-2.77953272288212,
-//1.30463524394773,
-//0.54036308097494
-//            });
+            //            samplesMFCC.Add("Два", new double[] { 108.458383278458,
+            //23.7530682467297,
+            //-4.36526446729434,
+            //7.77997941631068,
+            //-1.15281695013042,
+            //-6.32192546644515,
+            //3.41412201405264,
+            //1.28586342509823,
+            //-0.531651633753943,
+            //-2.77953272288212,
+            //1.30463524394773,
+            //0.54036308097494
+            //            });
 
-//            samplesMFCC.Add("Три", new double[] { 114.642651165638,
-//8.89561806588891,
-//-7.17258179111635,
-//18.0156652689698,
-//3.54273728138824,
-//-1.31035596162442,
-//3.3406453011858,
-//-3.26017049701631,
-//1.34014915986403,
-//-0.55316300244534,
-//2.29425678553576,
-//-0.00354136452707066
-//            });
+            //            samplesMFCC.Add("Три", new double[] { 114.642651165638,
+            //8.89561806588891,
+            //-7.17258179111635,
+            //18.0156652689698,
+            //3.54273728138824,
+            //-1.31035596162442,
+            //3.3406453011858,
+            //-3.26017049701631,
+            //1.34014915986403,
+            //-0.55316300244534,
+            //2.29425678553576,
+            //-0.00354136452707066
+            //            });
 
-//            samplesMFCC.Add("Четыре", new double[] { 101.328218872533,
-//3.57330129527,
-//-1.34401197393287,
-//18.5283481555506,
-//6.67967967007905,
-//-1.54765088488265,
-//2.86462275705537,
-//-2.13952580088545,
-//1.78939739204334,
-//-0.990360024591741,
-//0.672322455414861,
-//-0.897978354276461
-//            });
+            //            samplesMFCC.Add("Четыре", new double[] { 101.328218872533,
+            //3.57330129527,
+            //-1.34401197393287,
+            //18.5283481555506,
+            //6.67967967007905,
+            //-1.54765088488265,
+            //2.86462275705537,
+            //-2.13952580088545,
+            //1.78939739204334,
+            //-0.990360024591741,
+            //0.672322455414861,
+            //-0.897978354276461
+            //            });
 
-//            samplesMFCC.Add("Пять", new double[] { 122.549728900115,
-//17.3960698308855,
-//-8.89595538706509,
-//10.8358464257385,
-//0.281242118172386,
-//-5.46953472971976,
-//-1.60731240021606,
-//-5.71761509737905,
-//2.04363455137455,
-//-1.07465236935577,
-//2.82535966623671,
-//-1.57109204284586
-//            });
+            //            samplesMFCC.Add("Пять", new double[] { 122.549728900115,
+            //17.3960698308855,
+            //-8.89595538706509,
+            //10.8358464257385,
+            //0.281242118172386,
+            //-5.46953472971976,
+            //-1.60731240021606,
+            //-5.71761509737905,
+            //2.04363455137455,
+            //-1.07465236935577,
+            //2.82535966623671,
+            //-1.57109204284586
+            //            });
             #endregion
 
-#region 1-5
+            #region 1-5
             samplesMFCC.Add("Один", new double[] {115.902755904026,
 26.4175781482317,
 -19.4969240820016,
@@ -418,7 +418,7 @@ namespace SubtitleCreator
 3.76850879675914,
 -1.85753593805106
             });
-#endregion
+            #endregion
 
             List<double> temp = new List<double>();
 
@@ -439,13 +439,14 @@ namespace SubtitleCreator
             }
 
             string str = "";
+            string str2 = "";
             for (int j = 0; j < AudioProcessor.Frames.Count; j++)
             {
                 str += (j + 1).ToString() + "\t" + AudioProcessor.Frames[j].Caption + "\t" + AudioProcessor.Frames[j].GetStart + "\t" + AudioProcessor.Frames[j].GetEnd + "\r\n";
-                //str += (j + 1).ToString() + "\t" + AudioProcessor.Frames[j].Caption + "\t" + GetDuration(AudioProcessor.Frames[j].GetStart) + "\t" + GetDuration(AudioProcessor.Frames[j].GetEnd) + "\r\n";
+                str2 += (j + 1).ToString() + "\t" + AudioProcessor.Frames[j].Caption + "\t" + GetDuration(AudioProcessor.Frames[j].GetStart) + "\t" + GetDuration(AudioProcessor.Frames[j].GetEnd) + "\r\n";
             }
             MessageBox.Show(str);
-
+            MessageBox.Show(str2);
         }
 
         private void btnOpen_Click(object sender, EventArgs e)

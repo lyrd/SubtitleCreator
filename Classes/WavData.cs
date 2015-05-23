@@ -57,7 +57,7 @@ namespace SubtitleCreator
 
                     rawData = sampleBuffer;
 
-                    Normalization(rawData);
+                    Normalization(ref rawData);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace SubtitleCreator
 
         }
 
-        private static void Normalization(short[] _rawData)
+        private static void Normalization(ref short[] _rawData)
         {
             double[] _nornalizeData = new double[sampleNumber];
 

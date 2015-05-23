@@ -36,17 +36,9 @@ namespace SubtitleCreator
             double[] fourierRaw = FourierTransformFast(ref temp, p2length, true);
             double[,] melFilters = GetMelFilters(mfccSize, p2length, frequency, freqMin, freqMax);
 
-            double[] logPower = CalcPower(fourierRaw, p2length, melFilters, mfccSize);
-            double[] dctRaw = DctTransform(logPower, mfccSize);
+            double[] logPower = CalcPower(ref fourierRaw, p2length, melFilters, mfccSize);
+            double[] dctRaw = DctTransform(ref logPower, mfccSize);
     
-            //TEST
-            //Constants.length = sampleLength;
-            //Constants.p2length = p2length;
-            //Constants.sizemel[0] = melFilters.GetLength(0);
-            //Constants.sizemel[1] = melFilters.GetLength(1);
-            //Constants.melFiltersWTF = melFilters;
-            //TEST
-
             return dctRaw;            
         }
 
@@ -170,20 +162,6 @@ namespace SubtitleCreator
                 //TODO: "FT bin too small" if!(m > 0 && (fb[m] - fb[m-1]) < epsilon);
             }
 
-            //TEST
-            //for (byte m = 0; m < mfccSize + 2; m++)
-            //{
-            //    fb[m] = MelToFrequency(fb[m]);
-            //}
-
-            //for (byte m = 0; m < mfccSize + 2; m++)
-            //{
-            //    fb[m] = Math.Floor((filterLength + 1) * fb[m] / frequency);
-            //}
-
-            //Constants.fb = fb;
-            //TEST
-
             double[,] filterBanks = new double[mfccSize, filterLength];
 
             for (byte m = 1; m < mfccSize + 1; m++)
@@ -210,7 +188,7 @@ namespace SubtitleCreator
         }
 
         //Вычисление энергии фрейма
-        private static double[] CalcPower(double[] fourierRaw, uint fourierLength, double[,] melFilters, byte mfccCount)
+        private static double[] CalcPower(ref double[] fourierRaw, uint fourierLength, double[,] melFilters, byte mfccCount)
         {
 
             double[] logPower = new double[mfccCount];
@@ -233,7 +211,7 @@ namespace SubtitleCreator
         }
 
         //Дискретное косинусное преобразование
-        private static double[] DctTransform(double[] data, uint length)
+        private static double[] DctTransform(ref double[] data, uint length)
         {
 
             double[] dctTransform = new double[length];
