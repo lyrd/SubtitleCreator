@@ -30,13 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            this.btnTest = new System.Windows.Forms.Button();
+            this.btnStart = new System.Windows.Forms.Button();
             this.tBInputVideo = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnOpen = new System.Windows.Forms.Button();
@@ -48,26 +42,23 @@
             this.standartFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extendedFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSL_About = new System.Windows.Forms.ToolStripButton();
-            this.testTB = new System.Windows.Forms.TextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.testChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.testCheckBox = new System.Windows.Forms.CheckBox();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.testChart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // btnTest
+            // btnStart
             // 
-            this.btnTest.Location = new System.Drawing.Point(651, 45);
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(103, 23);
-            this.btnTest.TabIndex = 0;
-            this.btnTest.Text = "test";
-            this.btnTest.UseVisualStyleBackColor = true;
-            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            this.btnStart.Location = new System.Drawing.Point(651, 45);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(103, 23);
+            this.btnStart.TabIndex = 0;
+            this.btnStart.Text = "Старт";
+            this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // tBInputVideo
             // 
@@ -109,7 +100,7 @@
             this.tSL_About});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1137, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(880, 25);
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -161,87 +152,39 @@
             this.tSL_About.Size = new System.Drawing.Size(86, 22);
             this.tSL_About.Text = "О программе";
             // 
-            // testTB
-            // 
-            this.testTB.Location = new System.Drawing.Point(776, 84);
-            this.testTB.Multiline = true;
-            this.testTB.Name = "testTB";
-            this.testTB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.testTB.Size = new System.Drawing.Size(361, 462);
-            this.testTB.TabIndex = 5;
-            // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(790, 44);
+            this.progressBar1.Location = new System.Drawing.Point(18, 153);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(822, 23);
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.progressBar1.TabIndex = 3;
-            this.progressBar1.Visible = false;
             // 
-            // testChart
+            // statusStrip1
             // 
-            chartArea3.Name = "ChartArea1";
-            this.testChart.ChartAreas.Add(chartArea3);
-            this.testChart.Location = new System.Drawing.Point(18, 84);
-            this.testChart.Name = "testChart";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.Color = System.Drawing.Color.Blue;
-            series5.Name = "Series1";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Color = System.Drawing.Color.Red;
-            series6.Name = "Series2";
-            this.testChart.Series.Add(series5);
-            this.testChart.Series.Add(series6);
-            this.testChart.Size = new System.Drawing.Size(752, 228);
-            this.testChart.TabIndex = 6;
-            this.testChart.Text = "chart1";
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 196);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(880, 22);
+            this.statusStrip1.TabIndex = 5;
+            this.statusStrip1.Text = "statusStrip1";
             // 
-            // testCheckBox
+            // toolStripStatusLabel1
             // 
-            this.testCheckBox.AutoSize = true;
-            this.testCheckBox.Location = new System.Drawing.Point(760, 47);
-            this.testCheckBox.Name = "testCheckBox";
-            this.testCheckBox.Size = new System.Drawing.Size(58, 17);
-            this.testCheckBox.TabIndex = 7;
-            this.testCheckBox.Text = "isNorm";
-            this.testCheckBox.UseVisualStyleBackColor = true;
-            this.testCheckBox.Visible = false;
-            // 
-            // chart1
-            // 
-            chartArea4.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea4);
-            this.chart1.Location = new System.Drawing.Point(18, 318);
-            this.chart1.Name = "chart1";
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series7.Color = System.Drawing.Color.Blue;
-            series7.Name = "Series1";
-            series8.ChartArea = "ChartArea1";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series8.Color = System.Drawing.Color.Red;
-            series8.Name = "Series2";
-            this.chart1.Series.Add(series7);
-            this.chart1.Series.Add(series8);
-            this.chart1.Size = new System.Drawing.Size(752, 228);
-            this.chart1.TabIndex = 8;
-            this.chart1.Text = "chart1";
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1137, 549);
-            this.Controls.Add(this.chart1);
-            this.Controls.Add(this.testCheckBox);
-            this.Controls.Add(this.testChart);
-            this.Controls.Add(this.testTB);
+            this.ClientSize = new System.Drawing.Size(880, 218);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.btnTest);
+            this.Controls.Add(this.btnStart);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -251,8 +194,8 @@
             this.groupBox1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.testChart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -260,7 +203,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.TextBox tBInputVideo;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnOpen;
@@ -272,11 +215,9 @@
         private System.Windows.Forms.ToolStripMenuItem formatsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem standartFiltersMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extendedFiltersMenuItem;
-        private System.Windows.Forms.TextBox testTB;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.DataVisualization.Charting.Chart testChart;
-        private System.Windows.Forms.CheckBox testCheckBox;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }
 
