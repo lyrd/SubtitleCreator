@@ -60,7 +60,7 @@
     <Compile Include="Classes\Frame.cs" />
     <Compile Include="Classes\Constants.cs" />
     <Compile Include="ComplexFormatter.cs" />
-    <Compile Include="DTW.cs" />
+    <Compile Include="Classes\DTW.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

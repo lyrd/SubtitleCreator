@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using OperationWithFiles;
 using System.Drawing;
+using System.Threading;
 
 namespace SubtitleCreator
 {
@@ -15,7 +16,7 @@ namespace SubtitleCreator
     {
         public MainForm()
         {
-            InitializeComponent();
+            InitializeComponent();           
         }
 
         /*
@@ -62,6 +63,23 @@ namespace SubtitleCreator
         private enum Status { idle, in_work };
         private Status status = Status.idle;
 
+        Stopwatch sw = new Stopwatch();
+
+        delegate void SetCallBackrogressBarSpeed(int speed);
+
+        public void setProgressBarSpeed(int speed)
+        {
+            if(this.progressBar1.InvokeRequired)
+            {
+                SetCallBackrogressBarSpeed d = new SetCallBackrogressBarSpeed(setProgressBarSpeed);
+                this.Invoke(d, speed);//new object[] {speed}
+            }
+            else
+            {
+                this.progressBar1.MarqueeAnimationSpeed = 1;
+            }
+        }
+
         #region Methods
 
         private string Transliteration(string source)
@@ -105,6 +123,7 @@ namespace SubtitleCreator
                 MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         #endregion
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -113,8 +132,8 @@ namespace SubtitleCreator
             {
                 try
                 {
-                    progressBar1.MarqueeAnimationSpeed = 1;
                     Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
+                    sw.Start();
                     timerStatusChecker.Start();
                 }
                 catch (Win32Exception ex)
@@ -126,12 +145,6 @@ namespace SubtitleCreator
                     timerStatusChecker.Stop();
                 }
             }
-
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
-            //progressBar1.MarqueeAnimationSpeed = 1;
-            //AudioProcessor.Recognition(this.outputAudioFile, this.srtFile);
-            //MessageBox.Show("!!!!\r\n" + sw.ElapsedMilliseconds);
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -149,23 +162,6 @@ namespace SubtitleCreator
             outputAudioFile = String.Format("{0}.{1}", name, format);
 
             srtFile = Path.GetFileNameWithoutExtension(inputVideoFile);
-
-            //if (inputVideoFile != "err")
-            //{
-            //    try
-            //    {
-            //        Process.Start(Directory.GetCurrentDirectory() + "\\ffmpeg.exe", String.Format(" -i \"{0}\" -vn -ar 44100 -ac 2 -ab 192k -f {1} {2}", inputVideoFile, format, outputAudioFile));
-            //        timerStatusChecker.Start();
-            //    }
-            //    catch (Win32Exception ex)
-            //    {
-            //        MessageBox.Show(String.Format("ffmpeg.exe\n{0}", ex.Message),
-            //                        "Ошибка",
-            //                        MessageBoxButtons.OK,
-            //                        MessageBoxIcon.Error);
-            //        timerStatusChecker.Stop();
-            //    }
-            //}
         }
 
         #region "Event handlers"
@@ -178,6 +174,7 @@ namespace SubtitleCreator
 
             if (!this.Focused && status == Status.idle)
             {
+                //this.Cursor = Cursors.WaitCursor;
                 try
                 {
                     WavData.ReadWavDataChunk(outputAudioFile);
@@ -187,10 +184,13 @@ namespace SubtitleCreator
                     MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
-                AudioProcessor.Recognition(this.outputAudioFile, this.srtFile);
+                //AudioProcessor.Recognition(this.outputAudioFile, this.srtFile);
+                backgroundWorker1.RunWorkerAsync();
+
 
                 this.Activate();
                 timerStatusChecker.Stop();
+                //this.Cursor = Cursors.Default;
             }
         }
 
@@ -224,5 +224,21 @@ namespace SubtitleCreator
 
         }
         #endregion
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+            progressBar1.Style = ProgressBarStyle.Marquee;
+            setProgressBarSpeed(1);
+            AudioProcessor.Recognition(this.outputAudioFile, this.srtFile);
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.Cursor = Cursors.Default;
+            toolStripStatusLabel1.Text = "Затрачено времени: " + sw.ElapsedMilliseconds;
+            progressBar1.Style = ProgressBarStyle.Blocks;
+            progressBar1.Value = 100;
+        }
     }
 }

@@ -22,20 +22,10 @@ namespace SubtitleCreator
         private static List<int> pointsOfChangeValues = new List<int>();
         private static List<Point> borders = new List<Point>();
 
-        public static List<Frame> Frames
+        private static List<Frame> Frames
         {
             get { return combinedFrames; }
         }
-
-        //private static string Format(double time)
-        //{
-        //    return String.Format("00:00:{0}{1}", (int)time, (time - Math.Truncate(time)).ToString(".000"));//time - Math.Floor(time));//double.Truncate
-        //}
-
-        //private static double GetDuration(uint size)
-        //{
-        //    return size / (44100d * 1d * (16d / 8d));
-        //}
 
         private static string GetTime(uint size)
         {
