@@ -29,8 +29,10 @@ namespace SubtitleCreator
 
         private static string GetTime(uint size)
         {
-            double time = size / (44100d * 1d * (16d / 8d));
-            return String.Format("{0}:{1}:{2}", 00,00, Math.Round(time, 3));
+            //double time = size / (44100d * 1d * (16d / 8d));
+            //return String.Format("{0}:{1}:{2}", 00, 00, Math.Round(time, 3));
+            TimeSpan interval = TimeSpan.FromSeconds(size / (44100d * 1d * (16d / 8d)));
+            return String.Format("{0}:{1}:{2},{3}", interval.Hours, interval.Minutes, interval.Seconds, interval.Milliseconds);
         }
 
         private static void ClearLists()

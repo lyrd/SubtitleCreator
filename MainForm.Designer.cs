@@ -37,10 +37,15 @@
             this.timerStatusChecker = new System.Windows.Forms.Timer(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tSL_File = new System.Windows.Forms.ToolStripDropDownButton();
+            this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSL_Settings = new System.Windows.Forms.ToolStripDropDownButton();
             this.formatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.standartFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extendedFiltersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tSL_Base = new System.Windows.Forms.ToolStripDropDownButton();
+            this.inspectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSL_About = new System.Windows.Forms.ToolStripButton();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -63,8 +68,10 @@
             // 
             // tBInputVideo
             // 
+            this.tBInputVideo.BackColor = System.Drawing.SystemColors.Window;
             this.tBInputVideo.Location = new System.Drawing.Point(6, 19);
             this.tBInputVideo.Name = "tBInputVideo";
+            this.tBInputVideo.ReadOnly = true;
             this.tBInputVideo.Size = new System.Drawing.Size(535, 20);
             this.tBInputVideo.TabIndex = 1;
             // 
@@ -98,6 +105,7 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tSL_File,
             this.tSL_Settings,
+            this.tSL_Base,
             this.tSL_About});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -107,9 +115,26 @@
             // 
             // tSL_File
             // 
+            this.tSL_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openFileToolStripMenuItem,
+            this.exitToolStripMenuItem});
             this.tSL_File.Name = "tSL_File";
             this.tSL_File.Size = new System.Drawing.Size(49, 22);
             this.tSL_File.Text = "Файл";
+            // 
+            // openFileToolStripMenuItem
+            // 
+            this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
+            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.openFileToolStripMenuItem.Text = "Открыть файл";
+            this.openFileToolStripMenuItem.Click += new System.EventHandler(this.btnOpen_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.exitToolStripMenuItem.Text = "Выход";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // tSL_Settings
             // 
@@ -143,6 +168,32 @@
             this.extendedFiltersMenuItem.Size = new System.Drawing.Size(153, 22);
             this.extendedFiltersMenuItem.Text = "Расширенные";
             this.extendedFiltersMenuItem.Click += new System.EventHandler(this.extendedFiltersMenuItem_Click);
+            // 
+            // tSL_Base
+            // 
+            this.tSL_Base.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tSL_Base.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.inspectToolStripMenuItem,
+            this.addToolStripMenuItem});
+            this.tSL_Base.Image = ((System.Drawing.Image)(resources.GetObject("tSL_Base.Image")));
+            this.tSL_Base.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tSL_Base.Name = "tSL_Base";
+            this.tSL_Base.Size = new System.Drawing.Size(73, 22);
+            this.tSL_Base.Text = "База слов";
+            // 
+            // inspectToolStripMenuItem
+            // 
+            this.inspectToolStripMenuItem.Name = "inspectToolStripMenuItem";
+            this.inspectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.inspectToolStripMenuItem.Text = "Просмотреть";
+            this.inspectToolStripMenuItem.Click += new System.EventHandler(this.inspectToolStripMenuItem_Click);
+            // 
+            // addToolStripMenuItem
+            // 
+            this.addToolStripMenuItem.Name = "addToolStripMenuItem";
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addToolStripMenuItem.Text = "Добавить";
+            this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
             // tSL_About
             // 
@@ -228,6 +279,11 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton tSL_Base;
+        private System.Windows.Forms.ToolStripMenuItem inspectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
     }
 }
 
