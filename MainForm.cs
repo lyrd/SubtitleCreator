@@ -253,7 +253,7 @@ namespace SubtitleCreator
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO
+            Process.Start(Directory.GetCurrentDirectory() + "\\MfccBaseManager.exe");
         }
         #endregion
     }
