@@ -184,7 +184,7 @@ namespace SubtitleCreator
                 }
                 catch (WavException ex)
                 {
-                    MessageBox.Show(String.Format(ex.Message), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 backgroundWorker1.RunWorkerAsync();
@@ -253,7 +253,17 @@ namespace SubtitleCreator
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start(Directory.GetCurrentDirectory() + "\\MfccBaseManager.exe");
+            try
+            {
+                Process.Start(Directory.GetCurrentDirectory() + "\\MfccBaseManager.exe");
+            }
+            catch (Win32Exception ex)
+            {
+                MessageBox.Show(String.Format("MfccBaseManager.exe\n{0}", ex.Message),
+                                "Ошибка",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
         }
         #endregion
     }
