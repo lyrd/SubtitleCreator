@@ -130,11 +130,28 @@ namespace SubtitleCreator
                     temp.Add(WavData.RawData[i]);               
                 }
 
-                if (temp.Max() < 6000 & combinedFrames[j].IsSound == true)
+                if (temp.Max() < Constants.freqThreshold & combinedFrames[j].IsSound == true)//6000
                     combinedFrames[j].IsSound = false;
 
                 temp.Clear();
             }
+
+            //---------------------------------------------
+            for (int j = 0; j < combinedFrames.Count; j++)
+            {
+                if ((combinedFrames[j].GetEnd - combinedFrames[j].GetStart) < Constants.wordMinSize)
+                    combinedFrames[j].IsSound = false;
+            }
+            //---------------------------------------------
+            ////---------------------------------------------
+            //for (int j = 0; j < combinedFrames.Count; j++)
+            //{
+            //    if ((combinedFrames[j].GetEnd - combinedFrames[j].GetStart) < Constants.wordMinSize & combinedFrames[j].IsSound == false)
+            //    {
+ 
+            //    }
+            //}
+            ////---------------------------------------------
 
             ClearLists();
         }
@@ -143,10 +160,16 @@ namespace SubtitleCreator
         {
             double[] rawdata = WavData.NornalizeData;
 
-            Parallel.For(0, AudioProcessor.Frames.Count, (i) =>
+            //Parallel.For(0, AudioProcessor.Frames.Count, (i) =>
+            //{
+            //    if (AudioProcessor.Frames[i].IsSound)
+            //        AudioProcessor.Frames[i].InitMFCC(ref rawdata, AudioProcessor.Frames[i].GetStart, AudioProcessor.Frames[i].GetEnd, Constants.sampleRate);
+            //});
+
+            Parallel.For(0, combinedFrames.Count, (i) =>
             {
-                if (AudioProcessor.Frames[i].IsSound)
-                    AudioProcessor.Frames[i].InitMFCC(ref rawdata, AudioProcessor.Frames[i].GetStart, AudioProcessor.Frames[i].GetEnd, Constants.sampleRate);
+                if (combinedFrames[i].IsSound)
+                    combinedFrames[i].InitMFCC(ref rawdata, combinedFrames[i].GetStart, combinedFrames[i].GetEnd, Constants.sampleRate);
             });
         }
 
@@ -183,17 +206,31 @@ namespace SubtitleCreator
 
             List<double> tempMinDistances = new List<double>();
 
-            for (int j = 0; j < AudioProcessor.Frames.Count; j++)
+            //for (int j = 0; j < AudioProcessor.Frames.Count; j++)
+            //{
+            //    if (AudioProcessor.Frames[j].IsSound)
+            //    {
+            //        for (int i = 0; i < samplesMFCC.Count; i++)
+            //        {
+            //            tempMinDistances.Add(DTW.CalcDistance(AudioProcessor.Frames[j].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(i).Value, Constants.mfccSize));
+            //        }
+            //        tempMinDistances.Min();
+            //        tempMinDistances.IndexOf(tempMinDistances.Min());
+            //        AudioProcessor.Frames[j].Caption = samplesMFCC.ElementAt(tempMinDistances.IndexOf(tempMinDistances.Min())).Key;
+            //        tempMinDistances.Clear();
+            //    }
+            //}
+            for (int j = 0; j < combinedFrames.Count; j++)
             {
-                if (AudioProcessor.Frames[j].IsSound)
+                if (combinedFrames[j].IsSound)
                 {
                     for (int i = 0; i < samplesMFCC.Count; i++)
                     {
-                        tempMinDistances.Add(DTW.CalcDistance(AudioProcessor.Frames[j].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(i).Value, Constants.mfccSize));
+                        tempMinDistances.Add(DTW.CalcDistance(combinedFrames[j].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(i).Value, Constants.mfccSize));
                     }
                     tempMinDistances.Min();
                     tempMinDistances.IndexOf(tempMinDistances.Min());
-                    AudioProcessor.Frames[j].Caption = samplesMFCC.ElementAt(tempMinDistances.IndexOf(tempMinDistances.Min())).Key;
+                    combinedFrames[j].Caption = samplesMFCC.ElementAt(tempMinDistances.IndexOf(tempMinDistances.Min())).Key;
                     tempMinDistances.Clear();
                 }
             }
@@ -203,16 +240,24 @@ namespace SubtitleCreator
         {
             string subtitleText = "";
             uint subtitleNumber = 1;
-            for (int j = 0; j < AudioProcessor.Frames.Count; j++)
+            //for (int j = 0; j < AudioProcessor.Frames.Count; j++)
+            //{
+            //    if (AudioProcessor.Frames[j].IsSound)
+            //    {
+            //        subtitleText += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", subtitleNumber, GetTime(AudioProcessor.Frames[j].GetStart),
+            //            GetTime(AudioProcessor.Frames[j].GetEnd), AudioProcessor.Frames[j].Caption);
+            //        subtitleNumber++;
+            //    }
+            //}
+            for (int j = 0; j < combinedFrames.Count; j++)
             {
-                if (AudioProcessor.Frames[j].IsSound)
+                if (combinedFrames[j].IsSound)
                 {
-                    subtitleText += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", subtitleNumber, GetTime(AudioProcessor.Frames[j].GetStart),
-                        GetTime(AudioProcessor.Frames[j].GetEnd), AudioProcessor.Frames[j].Caption);
+                    subtitleText += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", subtitleNumber, GetTime(combinedFrames[j].GetStart),
+                        GetTime(combinedFrames[j].GetEnd), combinedFrames[j].Caption);
                     subtitleNumber++;
                 }
             }
-
             using (StreamWriter str = new StreamWriter(path + ".srt"))
             {
                 str.WriteLine(subtitleText);

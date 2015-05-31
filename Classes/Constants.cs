@@ -24,26 +24,28 @@ namespace SubtitleCreator
         //Процент наложения фреймов (0 <= x < 1)
         public static readonly float frameOverlap = 0.5F;
 
-        //Минимальный размер слова (во фреймах)
-        //В базе слов - avg 500 мс.
-        //Пусть - min 200 мс.
-        public static readonly short wordMinSize = (short)((200 / frameLenght) / (1 - frameOverlap));//byte
+        //Минимальный размер слова
+        //public static readonly short wordMinSize = (short)((200 / frameLenght) / (1 - frameOverlap));//byte
+        public static readonly short wordMinSize = 10000;//2000
 
         //Минимальное количество фреймов между двумя словами.
         //Пусть минимальное расстояние между двумя словами составляет 50% от минимального размера слова 
-        public static readonly short wordMinDistance = (short)(wordMinSize * 0.5F); //byte
+        //public static readonly short wordMinDistance = (short)(wordMinSize * 0.5F); //byte
+        public static readonly short wordMinDistance = 1000;
 
         ///Количество MFCC коэффициетов
         public static readonly byte mfccSize = 12;//12 10
 
-        ///Диапазон частот
+        ///Диапазон частот 300 8000
         public static readonly short mfccFreqMin = 300;
-        public static readonly short mfccFreqMax = 8000;//4000 8000
+        public static readonly short mfccFreqMax = 4000;//4000 8000
 
+        public static readonly short freqThreshold = 3000;//6000
+
+        //Порог энтропии
+        public static readonly double entropyThreshold = 1;//0.1 1
         //Количество значений
         public static readonly byte entropyBins = 75;
-        //Порог энтропии
-        public static readonly double entropyThreshold = 0.1;//0.1
 
         public static readonly uint sampleRate = 44100;
 
