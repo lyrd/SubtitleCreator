@@ -10,12 +10,6 @@ namespace SubtitleCreator
     {
         public static double CalcDistance(double[] seq1, uint seq1size, double[] seq2, uint seq2size)
         {
-
-            // Create diff matrix
-            //double** diffM = new double*[seq1size];
-            //for (uint32_t i = 0; i < seq1size; i++) {
-            //	diffM[i] = new  double[seq2size];
-            //}
             double[,] diffM = new double[seq1size, seq2size];
 
             for (uint i = 0; i < seq1size; i++)
@@ -39,11 +33,6 @@ namespace SubtitleCreator
             uint seq2sizeV = (uint)(seq2size / vectorSize);
 
             // Create diff matrix
-            //double** diffM = new double*[seq1sizeV];
-            //for (uint32_t i = 0; i < seq1sizeV; i++) {
-            //	diffM[i] = new  double[seq2sizeV];
-            //}
-
             double[,] diffM = new double[seq1sizeV, seq2sizeV];
 
             for (uint i = 0; i < seq1sizeV; i++)
@@ -70,13 +59,6 @@ namespace SubtitleCreator
 
         private static double FindDistance(uint seq1size, uint seq2size, double[,] diffM)
         {
-
-            // Create distance matrix (forward direction)
-            //double** pathM = new double*[seq1size];
-            //for (uint32_t i = 0; i < seq1size; i++) {
-            //	pathM[i] = new double[seq2size];
-            //}
-
             double[,] pathM = new double[seq1size, seq2size];
 
             pathM[0, 0] = diffM[0, 0];
