@@ -26,7 +26,7 @@ namespace SubtitleCreator
 
         //Минимальный размер слова
         //public static readonly short wordMinSize = (short)((200 / frameLenght) / (1 - frameOverlap));//byte
-        public static readonly short wordMinSize = 10000;//2000 10000
+        public static readonly short wordMinSize = 10000;//10000
 
         //Минимальное количество фреймов между двумя словами.
         //Пусть минимальное расстояние между двумя словами составляет 50% от минимального размера слова 
@@ -40,10 +40,10 @@ namespace SubtitleCreator
         public static readonly short mfccFreqMin = 300;
         public static readonly short mfccFreqMax = 4000;//4000 8000
 
-        public static readonly short freqThreshold = 6000;//6000
+        //public static readonly short freqThreshold = 1250;//6000
 
         //Порог энтропии
-        public static readonly double entropyThreshold = 0.01;//0.1 0.01 1
+        public static readonly double entropyThreshold = 0;//0.01
         //Количество значений
         public static readonly byte entropyBins = 75;//75
 
