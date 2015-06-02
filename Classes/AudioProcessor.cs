@@ -125,9 +125,9 @@ namespace SubtitleCreator
             //List<double> temp = new List<double>();
             //for (int j = 0; j < combinedFrames.Count; j++)
             //{
-            //    for (uint i = combinedFrames[j].GetStart; i < combinedFrames[j].GetEnd; i++)
+            //    for (uint i = combinedFrames[j].Start; i < combinedFrames[j].End; i++)
             //    {
-            //        temp.Add(WavData.RawData[i]);               
+            //        temp.Add(WavData.RawData[i]);
             //    }
 
             //    if (temp.Max() < Constants.freqThreshold & combinedFrames[j].IsSound == true)//6000
