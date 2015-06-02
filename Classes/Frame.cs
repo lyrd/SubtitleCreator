@@ -58,13 +58,13 @@ namespace SubtitleCreator
 //#endif
         }
 
-        public uint GetStart
+        public uint Start
         {
             get { return this.start; }
             set { this.start = value; }
         }
 
-        public uint GetEnd
+        public uint End
         {
             get { return this.end; }
             set { this.end = value; }

@@ -22,7 +22,7 @@ namespace SubtitleCreator
         private static List<int> pointsOfChangeValues = new List<int>();
         private static List<Point> borders = new List<Point>();
 
-        private static readonly string pathToBase = /*Directory.GetCurrentDirectory() +*/ "mfccBase.mfcc";
+        private static readonly string pathToBase = "mfccBase.mfcc";
 
         private static List<Frame> Frames
         {
@@ -59,7 +59,7 @@ namespace SubtitleCreator
             //Вычисления энтропии фреймов
             for (int i = 0; i < totalAmountOfFullFrames - 2; i++)
             {
-                frames[i].Init(WavData.RawData, WavData.NornalizeData, frames[i].GetStart, frames[i].GetEnd);
+                frames[i].Init(WavData.RawData, WavData.NornalizeData, frames[i].Start, frames[i].End);
             }
 
             //Определение содержимого фреймов (тишина или звук)
@@ -104,13 +104,13 @@ namespace SubtitleCreator
             //Создание новый фреймов
             for (int i = 0; i < borders.Count; i++)
             {
-                combinedFrames.Add(new Frame(i, frames[borders[i].X].GetStart, frames[borders[i].Y].GetEnd));
+                combinedFrames.Add(new Frame(i, frames[borders[i].X].Start, frames[borders[i].Y].End));
             }
 
             //Вычисление энтропии
             for (int i = 0; i < combinedFrames.Count; i++)
             {
-                combinedFrames[i].Init(WavData.RawData, WavData.NornalizeData, combinedFrames[i].GetStart, combinedFrames[i].GetEnd);
+                combinedFrames[i].Init(WavData.RawData, WavData.NornalizeData, combinedFrames[i].Start, combinedFrames[i].End);
             }
 
             //Содержание фреймов
@@ -136,19 +136,20 @@ namespace SubtitleCreator
             //    temp.Clear();
             //}
 
-            //---------------------------------------------
             for (int j = 0; j < combinedFrames.Count; j++)
             {
-                if ((combinedFrames[j].GetEnd - combinedFrames[j].GetStart) < Constants.wordMinSize)
+                if ((combinedFrames[j].End - combinedFrames[j].Start) < Constants.wordMinSize)
                     combinedFrames[j].IsSound = false;
             }
-            //---------------------------------------------
+
             ////---------------------------------------------
-            //for (int j = 0; j < combinedFrames.Count; j++)
+            //for (int j = 1; j < combinedFrames.Count - 1; j++)
             //{
-            //    if ((combinedFrames[j].GetEnd - combinedFrames[j].GetStart) < Constants.wordMinSize & combinedFrames[j].IsSound == false)
+            //    if ((combinedFrames[j].End - combinedFrames[j].Start) < Constants.wordMinDistance & combinedFrames[j].IsSound == false
+            //        & combinedFrames[j - 1].IsSound & combinedFrames[j + 1].IsSound)
             //    {
- 
+            //        combinedFrames[j - 1].End = combinedFrames[j + 1].End;
+            //        combinedFrames[j + 1].IsSound = false;
             //    }
             //}
             ////---------------------------------------------
@@ -160,16 +161,10 @@ namespace SubtitleCreator
         {
             double[] rawdata = WavData.NornalizeData;
 
-            //Parallel.For(0, AudioProcessor.Frames.Count, (i) =>
-            //{
-            //    if (AudioProcessor.Frames[i].IsSound)
-            //        AudioProcessor.Frames[i].InitMFCC(ref rawdata, AudioProcessor.Frames[i].GetStart, AudioProcessor.Frames[i].GetEnd, Constants.sampleRate);
-            //});
-
             Parallel.For(0, combinedFrames.Count, (i) =>
             {
                 if (combinedFrames[i].IsSound)
-                    combinedFrames[i].InitMFCC(ref rawdata, combinedFrames[i].GetStart, combinedFrames[i].GetEnd, Constants.sampleRate);
+                    combinedFrames[i].InitMFCC(ref rawdata, combinedFrames[i].Start, combinedFrames[i].End, Constants.sampleRate);
             });
         }
 
@@ -206,20 +201,6 @@ namespace SubtitleCreator
 
             List<double> tempMinDistances = new List<double>();
 
-            //for (int j = 0; j < AudioProcessor.Frames.Count; j++)
-            //{
-            //    if (AudioProcessor.Frames[j].IsSound)
-            //    {
-            //        for (int i = 0; i < samplesMFCC.Count; i++)
-            //        {
-            //            tempMinDistances.Add(DTW.CalcDistance(AudioProcessor.Frames[j].GetMfcc, Constants.mfccSize, samplesMFCC.ElementAt(i).Value, Constants.mfccSize));
-            //        }
-            //        tempMinDistances.Min();
-            //        tempMinDistances.IndexOf(tempMinDistances.Min());
-            //        AudioProcessor.Frames[j].Caption = samplesMFCC.ElementAt(tempMinDistances.IndexOf(tempMinDistances.Min())).Key;
-            //        tempMinDistances.Clear();
-            //    }
-            //}
             for (int j = 0; j < combinedFrames.Count; j++)
             {
                 if (combinedFrames[j].IsSound)
@@ -240,21 +221,15 @@ namespace SubtitleCreator
         {
             string subtitleText = "";
             uint subtitleNumber = 1;
-            //for (int j = 0; j < AudioProcessor.Frames.Count; j++)
-            //{
-            //    if (AudioProcessor.Frames[j].IsSound)
-            //    {
-            //        subtitleText += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", subtitleNumber, GetTime(AudioProcessor.Frames[j].GetStart),
-            //            GetTime(AudioProcessor.Frames[j].GetEnd), AudioProcessor.Frames[j].Caption);
-            //        subtitleNumber++;
-            //    }
-            //}
+ 
             for (int j = 0; j < combinedFrames.Count; j++)
             {
                 if (combinedFrames[j].IsSound)
                 {
-                    subtitleText += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", subtitleNumber, GetTime(combinedFrames[j].GetStart),
-                        GetTime(combinedFrames[j].GetEnd), combinedFrames[j].Caption);
+                    subtitleText += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", subtitleNumber, GetTime(combinedFrames[j].Start),
+                        GetTime(combinedFrames[j].End), combinedFrames[j].Caption);
+                    //subtitleText += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", subtitleNumber, (combinedFrames[j].Start),
+                    //    (combinedFrames[j].End), combinedFrames[j].Caption);
                     subtitleNumber++;
                 }
             }
