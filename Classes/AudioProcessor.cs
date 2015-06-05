@@ -43,6 +43,15 @@ namespace SubtitleCreator
             borders.Clear();
         }
 
+        private static string DoubleToString(double[] array)
+        {
+            string str = "";
+            for (int i = 0; i < array.Length; i++)
+                str += array[i] + "/";
+            str = str.Substring(0, str.Length - 1);
+            return str;
+        }
+
         private static void GetFrames()
         {
             //Создание фреймов
@@ -121,7 +130,7 @@ namespace SubtitleCreator
                 else
                     combinedFrames[i].IsSound = false;
             }
-
+            //------------------------
             //List<double> temp = new List<double>();
             //for (int j = 0; j < combinedFrames.Count; j++)
             //{
@@ -135,7 +144,7 @@ namespace SubtitleCreator
 
             //    temp.Clear();
             //}
-
+            //--------------------
             for (int j = 0; j < combinedFrames.Count; j++)
             {
                 if ((combinedFrames[j].End - combinedFrames[j].Start) < Constants.wordMinSize)
@@ -166,6 +175,13 @@ namespace SubtitleCreator
                 if (combinedFrames[i].IsSound)
                     combinedFrames[i].InitMFCC(ref rawdata, combinedFrames[i].Start, combinedFrames[i].End, Constants.sampleRate);
             });
+
+            //for (int j = 0; j < combinedFrames.Count; j++)
+            //    if (combinedFrames[j].IsSound)
+            //        using (StreamWriter streamwriter = new StreamWriter("111111111111111111111111111111.txt", true, Encoding.UTF8))
+            //        {
+            //            streamwriter.WriteLine(String.Format("{0};{1}", "test" + j, DoubleToString(combinedFrames[j].GetMfcc)));
+            //        }
         }
 
         private static void ReadFromDataBase(ref Dictionary<string, double[]> samplesMFCC, string pathToBase)

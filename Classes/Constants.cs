@@ -40,7 +40,7 @@ namespace SubtitleCreator
         public static readonly short mfccFreqMin = 300;//300
         public static readonly short mfccFreqMax = 4000;//4000 8000
 
-        //public static readonly short freqThreshold = 5000;//6000
+        //public static readonly short freqThreshold = 6000;//6000
 
         //Порог энтропии
         public static readonly double entropyThreshold = 0.05;//0.01 0,05
