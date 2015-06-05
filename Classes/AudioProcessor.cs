@@ -13,7 +13,7 @@ namespace SubtitleCreator
         private static uint start = 0;
         private static uint finish = start + Constants.frameLenght;
         private static uint shift = (uint)(Constants.frameLenght * Constants.frameOverlap);
-        private static uint totalAmountOfFullFrames = (uint)Math.Floor((double)WavData.SampleNumber / 128);
+        private static uint totalAmountOfFullFrames = (uint)Math.Floor((double)WavData.SampleNumber / shift);//128
         private static int count = 0;
         private static bool flag;
         private static List<Frame> frames = new List<Frame>();
