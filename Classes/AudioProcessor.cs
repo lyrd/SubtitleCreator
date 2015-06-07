@@ -240,7 +240,8 @@ namespace SubtitleCreator
  
             for (int j = 0; j < combinedFrames.Count; j++)
             {
-                if (combinedFrames[j].IsSound)
+                //if (combinedFrames[j].IsSound)
+                if (combinedFrames[j].IsSound & !combinedFrames[j].Caption.Contains('#'))
                 {
                     subtitleText += String.Format("{0}\r\n{1} --> {2}\r\n{3}\r\n\r\n", subtitleNumber, GetTime(combinedFrames[j].Start),
                         GetTime(combinedFrames[j].End), combinedFrames[j].Caption);

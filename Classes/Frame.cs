@@ -84,7 +84,7 @@ namespace SubtitleCreator
 
         public void Init(short[] source, double[] sourceNormalized, uint start, uint finish)
         {
-            this.rms = Basic.RMS(source, start, finish);
+            //this.rms = Basic.RMS(source, start, finish);
             this.entropy = Basic.Entropy(sourceNormalized, start, finish, Constants.entropyBins, -1, 1);
         }
 
