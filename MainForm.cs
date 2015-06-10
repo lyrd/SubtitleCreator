@@ -266,5 +266,17 @@ namespace SubtitleCreator
             }
         }
         #endregion
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            WavData.ReadWavDataChunk("Minutochku._Eto_nash_drug!_-_Dvenadcatj_stuljev.wav");
+            AudioProcessorNew ap = new AudioProcessorNew();
+            ap.Recognition();
+            ////MessageBox.Show(WavData.SampleNumber.ToString());
+
+            //uint totalAmountOfFullFrames = (uint)Math.Floor((double)WavData.SampleNumber / 128d);
+            //MessageBox.Show(totalAmountOfFullFrames.ToString());
+            MessageBox.Show("!!!!");
+        }
     }
 }

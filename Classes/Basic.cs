@@ -44,7 +44,8 @@ namespace SubtitleCreator
             //Расчет вероятностей
             uint index;
 
-            for (uint i = start; i <= finish; i++)
+            //for (uint i = start; i <= finish; i++)
+            for (uint i = start; i < finish; i++)
             {
                 double value = source[i];
                 index = (uint)Math.Floor((value - minRaw) / binSize);

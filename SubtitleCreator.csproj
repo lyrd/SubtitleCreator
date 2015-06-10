@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\AudioProcessorNew.cs" />
     <Compile Include="Classes\AudioProcessor.cs" />
     <Compile Include="Classes\Basic.cs" />
     <Compile Include="Classes\Frame.cs" />

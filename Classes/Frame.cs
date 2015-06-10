@@ -35,6 +35,21 @@ namespace SubtitleCreator
             this.caption = "";
         }
 
+        public Frame(int id, uint start, uint end, bool isSound)
+        {
+            this.id = id;
+            this.rms = 0;
+            this.entropy = 0;
+            this.mfcc = null;
+
+            this.start = start;
+            this.end = end;
+
+            this.isSound = isSound;
+
+            this.caption = "";
+        }
+
         public int GetId
         {
             get { return this.id; }

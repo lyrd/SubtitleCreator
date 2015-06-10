@@ -51,6 +51,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.btnTest = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -184,14 +185,14 @@
             // inspectToolStripMenuItem
             // 
             this.inspectToolStripMenuItem.Name = "inspectToolStripMenuItem";
-            this.inspectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.inspectToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.inspectToolStripMenuItem.Text = "Просмотреть";
             this.inspectToolStripMenuItem.Click += new System.EventHandler(this.inspectToolStripMenuItem_Click);
             // 
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.addToolStripMenuItem.Text = "Добавить";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
@@ -233,11 +234,22 @@
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(651, 16);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(75, 23);
+            this.btnTest.TabIndex = 6;
+            this.btnTest.Text = "test";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(737, 140);
+            this.Controls.Add(this.btnTest);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.btnStart);
@@ -284,6 +296,7 @@
         private System.Windows.Forms.ToolStripDropDownButton tSL_Base;
         private System.Windows.Forms.ToolStripMenuItem inspectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
+        private System.Windows.Forms.Button btnTest;
     }
 }
 
