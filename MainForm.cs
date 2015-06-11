@@ -187,6 +187,7 @@ namespace SubtitleCreator
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
+                File.Delete(outputAudioFile);
                 backgroundWorker1.RunWorkerAsync();
 
                 this.Activate();
@@ -228,15 +229,17 @@ namespace SubtitleCreator
             this.Cursor = Cursors.WaitCursor;
             progressBar1.Style = ProgressBarStyle.Marquee;
             setProgressBarSpeed(1);
-            AudioProcessor.Recognition(this.outputAudioFile, this.srtFile);
+
+            AudioProcessorNew ap = new AudioProcessorNew(srtFile);
+            ap.Recognition();
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.Cursor = Cursors.Default;
             TimeSpan interval = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
-            toolStripStatusLabel1.Text = String.Format("Затрачено времени: {0}:{1}:{2}.{3}", interval.Hours, interval.Minutes, interval.Seconds, interval.Milliseconds);
-            //toolStripStatusLabel1.Text = "Затрачено времени: " + sw.ElapsedMilliseconds;
+            toolStripStatusLabel1.Text = String.Format("Затрачено времени: {0:00}:{1:00}:{2:00}.{3:00}", interval.Hours, interval.Minutes, interval.Seconds, interval.Milliseconds);
+
             progressBar1.Style = ProgressBarStyle.Blocks;
             progressBar1.Value = 100;
         }
@@ -270,13 +273,41 @@ namespace SubtitleCreator
         private void btnTest_Click(object sender, EventArgs e)
         {
             WavData.ReadWavDataChunk("Minutochku._Eto_nash_drug!_-_Dvenadcatj_stuljev.wav");
-            AudioProcessorNew ap = new AudioProcessorNew();
+            //WavData.ReadWavDataChunk("Vi_nepraviljno_konya_postavili_-_Dvenadcatj_stuljev.wav");
+            AudioProcessorNew ap = new AudioProcessorNew(srtFile);
             ap.Recognition();
-            ////MessageBox.Show(WavData.SampleNumber.ToString());
 
-            //uint totalAmountOfFullFrames = (uint)Math.Floor((double)WavData.SampleNumber / 128d);
-            //MessageBox.Show(totalAmountOfFullFrames.ToString());
-            MessageBox.Show("!!!!");
+            //foreach (Frame frame in ap.Frames)
+            //    if (frame.IsSound)
+            //        TEST_WavVisualization(frame.Start, frame.End, chart1, frame.GetId.ToString());
         }
+
+        private void TEST_WavVisualization(uint start, uint finish, System.Windows.Forms.DataVisualization.Charting.Chart chart, string series)
+        {
+            short min = WavData.RawData.Min();
+            short max = WavData.RawData.Max();
+
+            chart.Series.Add(series);
+            chart.Series[series].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+
+            chart.ChartAreas[0].CursorX.IsUserEnabled = true;
+            chart.ChartAreas[0].CursorX.IsUserSelectionEnabled = true;
+            chart.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+            chart.ChartAreas[0].AxisX.ScrollBar.IsPositionedInside = true;
+
+
+            int[] coords_raw = { 0, (int)WavData.SampleNumber, -max, max };
+
+            chart.ChartAreas[0].AxisX.Minimum = coords_raw[0];
+            chart.ChartAreas[0].AxisX.Maximum = coords_raw[1];
+
+            chart.ChartAreas[0].AxisY.Minimum = coords_raw[2];
+            chart.ChartAreas[0].AxisY.Maximum = coords_raw[3];
+
+            for (uint i = start; i < finish; i++)
+                chart.Series[series].Points.AddXY(i, WavData.RawData[i]);
+        }
+
+
     }
 }

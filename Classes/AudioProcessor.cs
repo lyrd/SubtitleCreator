@@ -262,7 +262,7 @@ namespace SubtitleCreator
             GetMFCC();
             GetCaption();
             GetSrtFile(srtFile);
-            File.Delete(audioFile);
+            //File.Delete(audioFile);
         }
     }
 }

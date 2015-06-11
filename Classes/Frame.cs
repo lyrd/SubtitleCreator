@@ -20,6 +20,8 @@ namespace SubtitleCreator
 
         private string caption;
 
+        private uint lenght;
+
         public Frame(int id, uint start, uint end)
         {
             this.id = id;
@@ -33,6 +35,8 @@ namespace SubtitleCreator
             this.isSound = false;
 
             this.caption = "";
+
+            this.lenght = Constants.frameLenght;
         }
 
         public Frame(int id, uint start, uint end, bool isSound)
@@ -48,6 +52,14 @@ namespace SubtitleCreator
             this.isSound = isSound;
 
             this.caption = "";
+
+            this.lenght = Constants.frameLenght;
+        }
+
+        public uint Lenght
+        {
+            get { return this.lenght; }
+            set { this.lenght = value; }
         }
 
         public int GetId
