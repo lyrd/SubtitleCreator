@@ -274,12 +274,15 @@ namespace SubtitleCreator
         {
             WavData.ReadWavDataChunk("Minutochku._Eto_nash_drug!_-_Dvenadcatj_stuljev.wav");
             //WavData.ReadWavDataChunk("Vi_nepraviljno_konya_postavili_-_Dvenadcatj_stuljev.wav");
+            //WavData.ReadWavDataChunk("Eto_siroti_-_Dvenadcatj_stuljev.wav");
             AudioProcessorNew ap = new AudioProcessorNew(srtFile);
             ap.Recognition();
 
-            //foreach (Frame frame in ap.Frames)
-            //    if (frame.IsSound)
-            //        TEST_WavVisualization(frame.Start, frame.End, chart1, frame.GetId.ToString());
+            //Process.Start("notepad.exe", "111111111111111111111111111111.txt");
+
+            foreach (Frame frame in ap.Frames)
+                //if (frame.IsSound)
+                    TEST_WavVisualization(frame.Start, frame.End, chart1, frame.GetId.ToString());
         }
 
         private void TEST_WavVisualization(uint start, uint finish, System.Windows.Forms.DataVisualization.Charting.Chart chart, string series)
@@ -307,7 +310,6 @@ namespace SubtitleCreator
             for (uint i = start; i < finish; i++)
                 chart.Series[series].Points.AddXY(i, WavData.RawData[i]);
         }
-
 
     }
 }

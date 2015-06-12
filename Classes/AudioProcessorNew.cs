@@ -14,6 +14,11 @@ namespace SubtitleCreator
         private string pathToBase;
         private string pathToSrt;
 
+        public List<Frame> Frames
+        {
+            get { return combinedFrames; }
+        }
+
         public AudioProcessorNew(string pathToSrt)
         {
             this.pathToBase = "mfccBase.mfcc";
@@ -91,7 +96,7 @@ namespace SubtitleCreator
             bool startIsSet = false;
 
             for (int i = 0; i < _frames.Count - 1; i++)
-            {             
+            {
                 if (!startIsSet)
                 {
                     start = _frames[i].Start;
@@ -101,7 +106,7 @@ namespace SubtitleCreator
 
                 if (_frames[i].IsSound == _frames[i + 1].IsSound)
                 {
-                    
+
                 }
                 else
                 {
@@ -111,48 +116,40 @@ namespace SubtitleCreator
                     startIsSet = false;
                 }
             }
-            //=========================================================================================================================================
+            
+            _combinedFrames.RemoveAll(frame => frame.IsSound == false);
+
             for (int i = 0; i < _combinedFrames.Count; i++)
                 _combinedFrames[i].Lenght = _combinedFrames[i].End - _combinedFrames[i].Start;
 
-            for (int i = 0; i < _combinedFrames.Count - 1; i++)
-                if (_combinedFrames[i + 1].Start - _combinedFrames[i].End < Constants.wordMinDistance)
+            for (int i = 0; i < _combinedFrames.Count; i++)
+                if (_combinedFrames[i].Lenght < Constants.wordMinSize)
                 {
-                    //if ((_combinedFrames[i].End - _combinedFrames[i].Start < Constants.wordMinSize) || (_combinedFrames[i + 1].End - _combinedFrames[i + 1].Start < Constants.wordMinSize))
+                    if ((i != 0) && ((_combinedFrames[i].Start - _combinedFrames[i - 1].End) < Constants.wordMinDistance))
+                    {
+                        _combinedFrames[i].Start = _combinedFrames[i - 1].Start;
+                        _combinedFrames[i - 1].IsSound = false;
+                    }
+                    else if ((i < _combinedFrames.Count - 1) && ((_combinedFrames[i + 1].Start - _combinedFrames[i].End) < Constants.wordMinDistance))
                     {
                         _combinedFrames[i].End = _combinedFrames[i + 1].End;
                         _combinedFrames[i + 1].IsSound = false;
                     }
-                }//+else
-
-            ////----------------------------------
-            //for (int i = 0; i < _combinedFrames.Count - 1; i++)
-            //    if (_combinedFrames[i + 1].End - _combinedFrames[i].Start < Constants.wordMinDistance)
-            //    {
-            //        _combinedFrames[i].End = _combinedFrames[i + 1].End;
-            //        _combinedFrames[i + 1].IsSound = false;
-            //    }
-            ////----------------------------------
-
-            //for (int i = 0; i < _combinedFrames.Count; i++)
-            //    if (_combinedFrames[i].End - _combinedFrames[i].Start < Constants.wordMinDistance)
-            //        _combinedFrames[i].IsSound = false;
-
-            for (int i = 0; i < _combinedFrames.Count; i++)
-                if (!_combinedFrames[i].IsSound)
-                {
-                    _combinedFrames.RemoveAt(i);
-                    i = 0;
+                    else if ((i != 0) && (i < _combinedFrames.Count - 1) && ((_combinedFrames[i].Start - _combinedFrames[i - 1].End) < Constants.wordMinDistance) & ((_combinedFrames[i + 1].Start - _combinedFrames[i].End) < Constants.wordMinDistance))
+                    {
+                        _combinedFrames[i].Start = _combinedFrames[i - 1].Start;
+                        _combinedFrames[i].End = _combinedFrames[i + 1].End;
+                        _combinedFrames[i - 1].IsSound = false;
+                        _combinedFrames[i + 1].IsSound = false;
+                    }
                 }
 
-            ////----------------------------------
-            //for (int i = 0; i < _combinedFrames.Count - 1; i++)
-            //    if (_combinedFrames[i + 1].End - _combinedFrames[i].Start < Constants.wordMinDistance)
-            //    {
-            //        _combinedFrames[i].End = _combinedFrames[i + 1].End;
-            //        _combinedFrames[i + 1].IsSound = false;
-            //    }
-            ////----------------------------------
+            _combinedFrames.RemoveAll(frame => frame.IsSound == false);
+
+            for (int i = 0; i < _combinedFrames.Count; i++)
+                _combinedFrames[i].Lenght = _combinedFrames[i].End - _combinedFrames[i].Start;
+            _combinedFrames.RemoveAll(frame => frame.Lenght < Constants.wordMinSize);
+            //SaveFrames(_combinedFrames); //(_combinedFrames[i - 1].IsSound == true) &&
 
             return _combinedFrames;
         }
@@ -163,7 +160,7 @@ namespace SubtitleCreator
 
             Parallel.For(0, _combinedFrames.Count, (i) =>
             {
-                    _combinedFrames[i].InitMFCC(ref rawdata, _combinedFrames[i].Start, _combinedFrames[i].End, Constants.sampleRate);
+                _combinedFrames[i].InitMFCC(ref rawdata, _combinedFrames[i].Start, _combinedFrames[i].End, Constants.sampleRate);
             });
 
             //for (int j = 0; j < combinedFrames.Count; j++)
@@ -250,9 +247,9 @@ namespace SubtitleCreator
             GetEnthropy(ref frames);
             ContentsOfFrames(ref frames);
             combinedFrames = CombiningFrames(ref frames);
-            CalculateMFCC(combinedFrames);
-            CreateCaption(ref combinedFrames);
-            SaveIntoSrtFile(ref combinedFrames, pathToSrt);
+            //CalculateMFCC(combinedFrames);
+            //CreateCaption(ref combinedFrames);
+            //SaveIntoSrtFile(ref combinedFrames, pathToSrt);
         }
 
         private void SaveFrames(List<Frame> frames)
@@ -274,6 +271,6 @@ namespace SubtitleCreator
                     streamwriter.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}", frames[j].GetId, frames[j].Start, frames[j].End, (frames[j].End - frames[j].Start), frames[j].IsSound));
                 }
         }
-       
+
     }
 }

@@ -80,9 +80,6 @@ namespace SubtitleCreator
         public double[] GetMfcc
         {
             get { return this.mfcc; }
-//#if DEBUG
-//            set { this.mfcc = value; }
-//#endif
         }
 
         public uint Start
@@ -107,6 +104,13 @@ namespace SubtitleCreator
         {
             get { return this.caption; }
             set { this.caption = value; }
+        }
+
+        public Frame PasteTogether(Frame frame1, Frame frame2)
+        {
+            Frame resultFrame = new Frame(frame1.GetId, frame1.Start, frame2.End, true);
+            resultFrame.Lenght = resultFrame.End - resultFrame.Start;
+            return resultFrame;
         }
 
         public void Init(short[] source, double[] sourceNormalized, uint start, uint finish)

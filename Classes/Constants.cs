@@ -19,10 +19,10 @@ namespace SubtitleCreator
         public static readonly double beta = (1d - alpha); //or 0.46 or 0.46164  //public static readonly decimal betta = (1m - alpha) / 2m;
 
         //Длина фрейма (миллисекунды)
-        public static readonly ushort frameLenght = 50;//50 byte 256
+        public static readonly ushort frameLenght = 50;//50
 
         //Процент наложения фреймов (0 <= x < 1)
-        public static readonly float frameOverlap = 0.5F;//0.5F
+        public static readonly float frameOverlap = 0.5F;
 
         //Минимальный размер слова
         //public static readonly short wordMinSize = (short)((200 / frameLenght) / (1 - frameOverlap));//byte
@@ -30,22 +30,20 @@ namespace SubtitleCreator
 
         //Минимальное количество фреймов между двумя словами.
         //Пусть минимальное расстояние между двумя словами составляет 50% от минимального размера слова 
-        public static readonly short wordMinDistance = (short)(wordMinSize * 0.5F);
-        //public static readonly short wordMinDistance = 7000;
+        //public static readonly short wordMinDistance = (short)(wordMinSize * 0.5F);
+        public static readonly short wordMinDistance = 4000;//2000
 
         ///Количество MFCC коэффициетов
-        public static readonly byte mfccSize = 12;//12 10
+        public static readonly byte mfccSize = 12;
 
         ///Диапазон частот 300 8000
-        public static readonly short mfccFreqMin = 300;//300
-        public static readonly short mfccFreqMax = 4000;//4000 8000
-
-        //public static readonly short freqThreshold = 6000;//6000
+        public static readonly short mfccFreqMin = 300;
+        public static readonly short mfccFreqMax = 4000;
 
         //Порог энтропии
-        public static readonly double entropyThreshold = 0.1;//0.01 0,05
+        public static readonly double entropyThreshold = 0.1;//0.1
         //Количество значений
-        public static readonly byte entropyBins = 75;//75
+        public static readonly byte entropyBins = 75;
 
         public static readonly uint sampleRate = 44100;
 
