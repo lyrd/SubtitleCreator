@@ -106,13 +106,6 @@ namespace SubtitleCreator
             set { this.caption = value; }
         }
 
-        public Frame PasteTogether(Frame frame1, Frame frame2)
-        {
-            Frame resultFrame = new Frame(frame1.GetId, frame1.Start, frame2.End, true);
-            resultFrame.Lenght = resultFrame.End - resultFrame.Start;
-            return resultFrame;
-        }
-
         public void Init(short[] source, double[] sourceNormalized, uint start, uint finish)
         {
             //this.rms = Basic.RMS(source, start, finish);

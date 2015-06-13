@@ -221,7 +221,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 409);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 119);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(737, 22);
             this.statusStrip1.SizingGrip = false;
@@ -246,18 +246,19 @@
             this.btnTest.TabIndex = 6;
             this.btnTest.Text = "Test";
             this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Visible = false;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
             // chart1
             // 
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
-            this.chart1.Location = new System.Drawing.Point(12, 113);
+            this.chart1.Location = new System.Drawing.Point(13, 350);
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.Name = "Series1";
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(713, 283);
+            this.chart1.Size = new System.Drawing.Size(713, 56);
             this.chart1.TabIndex = 7;
             this.chart1.Text = "chart1";
             // 
@@ -265,7 +266,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(737, 431);
+            this.ClientSize = new System.Drawing.Size(737, 141);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.statusStrip1);

@@ -31,7 +31,7 @@ namespace SubtitleCreator
         //Минимальное количество фреймов между двумя словами.
         //Пусть минимальное расстояние между двумя словами составляет 50% от минимального размера слова 
         //public static readonly short wordMinDistance = (short)(wordMinSize * 0.5F);
-        public static readonly short wordMinDistance = 4000;//2000
+        public static readonly short wordMinDistance = 4000;//2000 4000
 
         ///Количество MFCC коэффициетов
         public static readonly byte mfccSize = 12;

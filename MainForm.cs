@@ -201,6 +201,9 @@ namespace SubtitleCreator
 
             this.Text = formText;
 
+            this.MinimumSize = new Size(this.Width, this.Height);
+            this.MaximumSize = new Size(this.Width, this.Height);
+
             if (standartFiltersMenuItem.Checked) { SetFilters("StandardFilters"); }
 
             if (extendedFiltersMenuItem.Checked) { SetFilters("ExtendedFilters"); }
@@ -272,9 +275,14 @@ namespace SubtitleCreator
 
         private void btnTest_Click(object sender, EventArgs e)
         {
-            WavData.ReadWavDataChunk("Minutochku._Eto_nash_drug!_-_Dvenadcatj_stuljev.wav");
-            //WavData.ReadWavDataChunk("Vi_nepraviljno_konya_postavili_-_Dvenadcatj_stuljev.wav");
-            //WavData.ReadWavDataChunk("Eto_siroti_-_Dvenadcatj_stuljev.wav");
+            byte ch = 2;
+            if (ch == 0)
+                WavData.ReadWavDataChunk("Minutochku._Eto_nash_drug!_-_Dvenadcatj_stuljev.wav");
+            else if (ch == 1)
+                WavData.ReadWavDataChunk("Vi_nepraviljno_konya_postavili_-_Dvenadcatj_stuljev.wav");
+            else
+                WavData.ReadWavDataChunk("Eto_siroti_-_Dvenadcatj_stuljev.wav");
+
             AudioProcessorNew ap = new AudioProcessorNew(srtFile);
             ap.Recognition();
 

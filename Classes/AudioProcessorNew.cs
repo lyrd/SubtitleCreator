@@ -154,6 +154,77 @@ namespace SubtitleCreator
             return _combinedFrames;
         }
 
+        private List<Frame> TEST_CombiningFrames(ref List<Frame> _frames)
+        {
+            List<Frame> _combinedFrames = new List<Frame>();
+            List<Frame> _resultFrames = new List<Frame>();
+
+            uint start = 0;
+            uint end = 0;
+            int id = 0;
+            bool isSound = false;
+
+            bool startIsSet = false;
+
+            for (int i = 0; i < _frames.Count - 1; i++)
+            {
+                if (!startIsSet)
+                {
+                    start = _frames[i].Start;
+                    isSound = _frames[i].IsSound;
+                    startIsSet = true;
+                }
+
+                if (_frames[i].IsSound == _frames[i + 1].IsSound)
+                {
+
+                }
+                else
+                {
+                    end = _frames[i].End;
+                    _combinedFrames.Add(new Frame(id, start, end, isSound));
+                    id++;
+                    startIsSet = false;
+                }
+            }
+
+            _combinedFrames.RemoveAll(frame => frame.IsSound == false);
+
+            start = 0;
+            end = 0;
+            id = 0;
+            startIsSet = false;
+
+            for (int i = 0; i < _combinedFrames.Count; i++)
+                _combinedFrames[i].Lenght = _combinedFrames[i].End - _combinedFrames[i].Start;
+
+            for (int i = 0; i < _combinedFrames.Count - 1; i++)
+            {
+                if (!startIsSet)
+                {
+                    start = _combinedFrames[i].Start;
+                    startIsSet = true;
+                }
+
+                if(_combinedFrames[i].Lenght < Constants.wordMinSize)
+                {
+                    if (_combinedFrames[i + 1].Start - _combinedFrames[i].End < Constants.wordMinSize)
+                    {
+
+                    }
+                    else
+                    {
+                        end = _combinedFrames[i].End;
+                        _resultFrames.Add(new Frame(id, start, end, true));
+                        id++;
+                        startIsSet = false;
+                    }
+                }
+            }
+
+            return _resultFrames;
+        }
+
         private void CalculateMFCC(List<Frame> _combinedFrames)
         {
             double[] rawdata = WavData.NornalizeData;
@@ -247,9 +318,10 @@ namespace SubtitleCreator
             GetEnthropy(ref frames);
             ContentsOfFrames(ref frames);
             combinedFrames = CombiningFrames(ref frames);
-            //CalculateMFCC(combinedFrames);
-            //CreateCaption(ref combinedFrames);
-            //SaveIntoSrtFile(ref combinedFrames, pathToSrt);
+
+            CalculateMFCC(combinedFrames);
+            CreateCaption(ref combinedFrames);
+            SaveIntoSrtFile(ref combinedFrames, pathToSrt);
         }
 
         private void SaveFrames(List<Frame> frames)
