@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//using size_t = System.UInt64;
-using size_t = System.UInt32;
-
 namespace SubtitleCreator
 {
     class Basic
@@ -79,11 +76,11 @@ namespace SubtitleCreator
             return entropy;
         }
 
-        public double EuclideanDistance(double[] a, double[] b, size_t size)
+        public double EuclideanDistance(double[] a, double[] b, uint size)
         {
             double distance = 0;
 
-            for (size_t i = 0; i < size; i++)
+            for (uint i = 0; i < size; i++)
             {
                 distance += Math.Pow((a[i] - b[i]), 2);
             }
@@ -91,11 +88,11 @@ namespace SubtitleCreator
             return Math.Sqrt(distance);
         }
 
-        public double EuclideanDistanceWithWeights(double[] a, double[] b, double[] weights, size_t size)
+        public double EuclideanDistanceWithWeights(double[] a, double[] b, double[] weights, uint size)
         {
             double distance = 0;
 
-            for (size_t i = 0; i < size; i++)
+            for (uint i = 0; i < size; i++)
             {
                 distance += Math.Pow((a[i] - b[i]), 2) * weights[i];
             }

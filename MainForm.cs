@@ -153,6 +153,13 @@ namespace SubtitleCreator
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
+            //---------------------------------
+            tBInputVideo.Text = "";
+            toolStripStatusLabel1.Text = "";
+            progressBar1.Value = 0;
+            stopwatch.Reset();
+            //---------------------------------
+
             OpenFileDialog dialog = new OpenFileDialog();
 
             dialog.Filter = String.Format("Video Files {0}|{1}", filter1, filter2);
@@ -175,6 +182,8 @@ namespace SubtitleCreator
 
             this.Text = status == Status.in_work ? formText + " - IN WORK" : formText;
             this.Enabled = status == Status.in_work ? false : true;
+
+            progressBar1.Style = ProgressBarStyle.Marquee;
 
             if (!this.Focused && status == Status.idle)
             {
@@ -233,8 +242,8 @@ namespace SubtitleCreator
             progressBar1.Style = ProgressBarStyle.Marquee;
             setProgressBarSpeed(1);
 
-            AudioProcessorNew ap = new AudioProcessorNew(srtFile);
-            ap.Recognition();
+            using (AudioProcessorNew ap = new AudioProcessorNew(srtFile))
+                ap.Recognition();
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -275,31 +284,31 @@ namespace SubtitleCreator
 
         private void btnTest_Click(object sender, EventArgs e)
         {
-            byte ch = 2;
-            if (ch == 0)
-                WavData.ReadWavDataChunk("Minutochku._Eto_nash_drug!_-_Dvenadcatj_stuljev.wav");
-            else if (ch == 1)
-                WavData.ReadWavDataChunk("Vi_nepraviljno_konya_postavili_-_Dvenadcatj_stuljev.wav");
-            else
-                WavData.ReadWavDataChunk("Eto_siroti_-_Dvenadcatj_stuljev.wav");
+            //byte ch = 2;
+            //if (ch == 0)
+            //    WavData.ReadWavDataChunk("Minutochku._Eto_nash_drug!_-_Dvenadcatj_stuljev.wav");
+            //else if (ch == 1)
+            //    WavData.ReadWavDataChunk("Vi_nepraviljno_konya_postavili_-_Dvenadcatj_stuljev.wav");
+            //else
+            //    WavData.ReadWavDataChunk("Eto_siroti_-_Dvenadcatj_stuljev.wav");
 
-            AudioProcessorNew ap = new AudioProcessorNew(srtFile);
-            ap.Recognition();
+            //AudioProcessorNew ap = new AudioProcessorNew(srtFile);
+            //ap.Recognition();
 
-            //Process.Start("notepad.exe", "111111111111111111111111111111.txt");
+            ////Process.Start("notepad.exe", "111111111111111111111111111111.txt");
 
-            //chart1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-            //chart1.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
-            //chart1.ChartAreas[0].AxisX.MinorGrid.Enabled = false;
-            //chart1.ChartAreas[0].AxisY.MinorGrid.Enabled = false;
-            //chart1.ChartAreas[0].AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
-            //chart1.ChartAreas[0].AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            ////chart1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            ////chart1.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            ////chart1.ChartAreas[0].AxisX.MinorGrid.Enabled = false;
+            ////chart1.ChartAreas[0].AxisY.MinorGrid.Enabled = false;
+            ////chart1.ChartAreas[0].AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            ////chart1.ChartAreas[0].AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
 
-            foreach (Frame frame in ap.Frames)
-                //if (frame.IsSound)
-                    TEST_WavVisualization(frame.Start, frame.End, chart1, frame.GetId.ToString());
+            //foreach (Frame frame in ap.Frames)
+            //    //if (frame.IsSound)
+            //        TEST_WavVisualization(frame.Start, frame.End, chart1, frame.GetId.ToString());
 
-            //chart1.SaveImage(String.Format("{0}{1}{2}{3}.bmp", chart1.ToString(), DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second), System.Drawing.Imaging.ImageFormat.Bmp);
+            ////chart1.SaveImage(String.Format("{0}{1}{2}{3}.bmp", chart1.ToString(), DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second), System.Drawing.Imaging.ImageFormat.Bmp);
         }
 
         private void TEST_WavVisualization(uint start, uint finish, System.Windows.Forms.DataVisualization.Charting.Chart chart, string series)

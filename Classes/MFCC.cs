@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 using System.Numerics;
 using System.Runtime.Serialization;
 
-//using size_t = System.UInt64;
-using size_t = System.UInt32;
-
 namespace SubtitleCreator
 {
     [Serializable]
@@ -120,7 +117,7 @@ namespace SubtitleCreator
         {
 
             //Выход из рекурсии
-            size_t n = (size_t)data.Count();
+            uint n = (uint)data.Count();
             if (n <= 1)
             {
                 return;
@@ -134,7 +131,7 @@ namespace SubtitleCreator
             FourierTransformFastRecursion(ref odd);
 
             //Объединение 
-            for (size_t i = 0; i < n / 2; i++)
+            for (uint i = 0; i < n / 2; i++)
             {
                 Complex t = Complex.FromPolarCoordinates(1.0, -2 * Math.PI * i / n) * odd[i];
                 data[i] = even[i] + t;

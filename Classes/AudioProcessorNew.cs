@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 
 namespace SubtitleCreator
 {
-    class AudioProcessorNew
+    class AudioProcessorNew : IDisposable
     {
         private List<Frame> frames = new List<Frame>();
         private List<Frame> combinedFrames = new List<Frame>();
         private string pathToBase;
         private string pathToSrt;
+
+        private bool disposed;
 
         public List<Frame> Frames
         {
@@ -377,6 +379,31 @@ namespace SubtitleCreator
             }
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    if (frames.Count != 0)
+                        frames.Clear();
+                    if (combinedFrames.Count != 0)
+                        combinedFrames.Clear();
+                    pathToBase = "";
+                    pathToSrt = "";
+                }
+            }
+
+            disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~AudioProcessorNew() { Dispose(false); }
 
     }
 }
