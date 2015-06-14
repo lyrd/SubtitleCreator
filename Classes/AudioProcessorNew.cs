@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SubtitleCreator
@@ -148,7 +149,7 @@ namespace SubtitleCreator
 
             for (int i = 0; i < _combinedFrames.Count; i++)
                 _combinedFrames[i].Lenght = _combinedFrames[i].End - _combinedFrames[i].Start;
-            _combinedFrames.RemoveAll(frame => frame.Lenght < Constants.wordMinSize);
+            _combinedFrames.RemoveAll(frame => frame.Lenght < Constants.wordMinSize);//-------------------------------------------
             //SaveFrames(_combinedFrames); //(_combinedFrames[i - 1].IsSound == true) &&
 
             return _combinedFrames;
@@ -157,7 +158,6 @@ namespace SubtitleCreator
         private List<Frame> TEST_CombiningFrames(ref List<Frame> _frames)
         {
             List<Frame> _combinedFrames = new List<Frame>();
-            List<Frame> _resultFrames = new List<Frame>();
 
             uint start = 0;
             uint end = 0;
@@ -190,46 +190,46 @@ namespace SubtitleCreator
 
             _combinedFrames.RemoveAll(frame => frame.IsSound == false);
 
-            start = 0;
-            end = 0;
-            id = 0;
-            startIsSet = false;
-
             for (int i = 0; i < _combinedFrames.Count; i++)
                 _combinedFrames[i].Lenght = _combinedFrames[i].End - _combinedFrames[i].Start;
 
-            for (int i = 0; i < _combinedFrames.Count - 1; i++)
-            {
-                if (!startIsSet)
+            for (int i = 0; i < _combinedFrames.Count; i++)
+                if (_combinedFrames[i].Lenght < Constants.wordMinSize)
                 {
-                    start = _combinedFrames[i].Start;
-                    startIsSet = true;
+                    if ((i != 0) && ((_combinedFrames[i].Start - _combinedFrames[i - 1].End) < Constants.wordMinDistance))
+                    {
+                        _combinedFrames[i].Start = _combinedFrames[i - 1].Start;
+                        _combinedFrames[i - 1].IsSound = false;
+                    }
+                    else if ((i < _combinedFrames.Count - 1) && ((_combinedFrames[i + 1].Start - _combinedFrames[i].End) < Constants.wordMinDistance))
+                    {
+                        _combinedFrames[i].End = _combinedFrames[i + 1].End;
+                        _combinedFrames[i + 1].IsSound = false;
+                    }
+                    else if ((i != 0) && (i < _combinedFrames.Count - 1) && ((_combinedFrames[i].Start - _combinedFrames[i - 1].End) < Constants.wordMinDistance) & ((_combinedFrames[i + 1].Start - _combinedFrames[i].End) < Constants.wordMinDistance))
+                    {
+                        _combinedFrames[i].Start = _combinedFrames[i - 1].Start;
+                        _combinedFrames[i].End = _combinedFrames[i + 1].End;
+                        _combinedFrames[i - 1].IsSound = false;
+                        _combinedFrames[i + 1].IsSound = false;
+                    }
                 }
 
-                if(_combinedFrames[i].Lenght < Constants.wordMinSize)
-                {
-                    if (_combinedFrames[i + 1].Start - _combinedFrames[i].End < Constants.wordMinSize)
-                    {
+            _combinedFrames.RemoveAll(frame => frame.IsSound == false);
 
-                    }
-                    else
-                    {
-                        end = _combinedFrames[i].End;
-                        _resultFrames.Add(new Frame(id, start, end, true));
-                        id++;
-                        startIsSet = false;
-                    }
-                }
-            }
+            for (int i = 0; i < _combinedFrames.Count; i++)
+                _combinedFrames[i].Lenght = _combinedFrames[i].End - _combinedFrames[i].Start;
+            _combinedFrames.RemoveAll(frame => frame.Lenght < Constants.wordMinSize);
+            //SaveFrames(_combinedFrames);
 
-            return _resultFrames;
+            return _combinedFrames;
         }
 
         private void CalculateMFCC(List<Frame> _combinedFrames)
         {
             double[] rawdata = WavData.NornalizeData;
 
-            Parallel.For(0, _combinedFrames.Count, (i) =>
+            ParallelFor(0, _combinedFrames.Count, (i) =>
             {
                 _combinedFrames[i].InitMFCC(ref rawdata, _combinedFrames[i].Start, _combinedFrames[i].End, Constants.sampleRate);
             });
@@ -317,7 +317,10 @@ namespace SubtitleCreator
             frames = CreateFrame();
             GetEnthropy(ref frames);
             ContentsOfFrames(ref frames);
+
             combinedFrames = CombiningFrames(ref frames);
+
+            //combinedFrames = TEST_CombiningFrames(ref frames);
 
             CalculateMFCC(combinedFrames);
             CreateCaption(ref combinedFrames);
@@ -343,6 +346,37 @@ namespace SubtitleCreator
                     streamwriter.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}", frames[j].GetId, frames[j].Start, frames[j].End, (frames[j].End - frames[j].Start), frames[j].IsSound));
                 }
         }
+
+        private void ParallelFor(int from, int to, Action<int> body)
+        {
+            int numProcs = Environment.ProcessorCount / 4;
+            int remainingWorkItems = numProcs;
+            int nextIteration = from;
+            // размер "порции" данных
+            const int batchSize = 3;
+            using (ManualResetEvent mre = new ManualResetEvent(false))
+            {
+                for (int p = 0; p < numProcs; p++)
+                {
+                    ThreadPool.QueueUserWorkItem(delegate
+                    {
+                        int index;
+                        while ((index = Interlocked.Add(ref nextIteration, batchSize) - batchSize) < to)
+                        {
+                            int end = index + batchSize;
+                            if (end >= to)
+                                end = to;
+                            for (int i = index; i < end; i++)
+                                body(i);
+                        }
+                        if (Interlocked.Decrement(ref remainingWorkItems) == 0)
+                            mre.Set();
+                    });
+                }
+                mre.WaitOne();
+            }
+        }
+
 
     }
 }

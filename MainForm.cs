@@ -288,9 +288,18 @@ namespace SubtitleCreator
 
             //Process.Start("notepad.exe", "111111111111111111111111111111.txt");
 
+            //chart1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            //chart1.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            //chart1.ChartAreas[0].AxisX.MinorGrid.Enabled = false;
+            //chart1.ChartAreas[0].AxisY.MinorGrid.Enabled = false;
+            //chart1.ChartAreas[0].AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            //chart1.ChartAreas[0].AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+
             foreach (Frame frame in ap.Frames)
                 //if (frame.IsSound)
                     TEST_WavVisualization(frame.Start, frame.End, chart1, frame.GetId.ToString());
+
+            //chart1.SaveImage(String.Format("{0}{1}{2}{3}.bmp", chart1.ToString(), DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second), System.Drawing.Imaging.ImageFormat.Bmp);
         }
 
         private void TEST_WavVisualization(uint start, uint finish, System.Windows.Forms.DataVisualization.Charting.Chart chart, string series)
